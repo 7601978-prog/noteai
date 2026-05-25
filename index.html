@@ -222,6 +222,55 @@ input,textarea{-webkit-appearance:none}
 .contact .links a:hover{color:var(--coral);background:var(--coral-soft)}
 .contact .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 
+/* MONTH CALENDAR */
+.month-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.dow{text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:4px}
+.dow.we{color:var(--coral)}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.day{background:var(--paper);border-radius:10px;padding:6px 7px;border:1px solid var(--line);cursor:pointer;transition:transform .12s,box-shadow .15s;overflow:hidden;display:flex;flex-direction:column;gap:2px;min-height:64px}
+@media(min-width:760px){.day{min-height:96px}}
+.day:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.day.other{opacity:.4}
+.day.today{background:linear-gradient(135deg,#FBE3DA,#F8D5BC);border-color:#E8B6A0}
+.day.we .d-num{color:var(--coral)}
+.day .d-num{font-weight:600;font-size:13px;color:var(--ink-2)}
+.day.today .d-num{color:var(--ink)}
+.day .d-evt{font-size:10.5px;padding:2px 6px;border-radius:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;line-height:1.25}
+.day .d-bday{font-size:10.5px;padding:2px 6px;border-radius:5px;background:var(--coral-soft);color:#A04A33;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day .d-more{font-size:10px;color:var(--muted);margin-top:auto}
+
+/* ORDERS */
+.order{display:flex;gap:12px;padding:13px 14px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);cursor:pointer;transition:transform .12s,box-shadow .15s;margin-bottom:8px}
+.order:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.order .st{flex:0 0 6px;border-radius:3px;align-self:stretch}
+.order .body{flex:1;min-width:0}
+.order .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.order .nm{font-weight:600;line-height:1.2}
+.order .pr{font-family:'Fraunces',serif;font-weight:600;font-size:15px;font-variation-settings:"opsz" 24;white-space:nowrap}
+.order .meta{font-size:12.5px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.order .nt{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+.order-group{margin-bottom:18px}
+.order-group h3{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;font-family:'Fraunces',serif;font-size:18px;font-variation-settings:"opsz" 48}
+.order-group h3 .n{margin-left:auto;color:var(--muted);font-size:13px;font-weight:400}
+
+/* GR */
+.gr-cat{margin-bottom:18px}
+.gr-cat h3{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;font-family:'Fraunces',serif;font-size:19px;font-variation-settings:"opsz" 48}
+.gr-cat h3 .n{margin-left:auto;color:var(--muted);font-size:13px;font-weight:400}
+.gr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.gr{padding:13px 14px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);cursor:pointer;transition:transform .12s,box-shadow .15s}
+.gr:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.gr .pos{font-size:12.5px;color:var(--muted);line-height:1.3}
+.gr .nm{font-weight:600;font-family:'Fraunces',serif;font-size:16px;font-variation-settings:"opsz" 24;margin-top:3px;line-height:1.2}
+.gr .nm.empty{color:var(--muted);font-style:italic;font-weight:400;font-family:'Manrope',sans-serif;font-size:13px}
+.gr .links{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.gr .links a{font-size:12px;color:var(--ink-2);text-decoration:none;padding:2px 8px;background:var(--paper-2);border-radius:999px}
+.gr .links a:hover{color:var(--coral);background:var(--coral-soft)}
+.gr .org{font-size:12px;color:var(--muted);margin-top:4px}
+.gr-seed{padding:24px;text-align:center;background:linear-gradient(135deg,#F8F2E2,#F2E9D0);border-radius:var(--r-lg);border:1px solid var(--line-2)}
+.gr-seed h3{font-family:'Fraunces',serif;font-size:20px;margin-bottom:6px}
+.gr-seed p{color:var(--ink-2);margin:0 0 14px;font-size:13.5px}
+
 /* SUB TABS (внутри Трэвела) */
 .sub-tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--paper);border-radius:999px;box-shadow:var(--shadow);border:1px solid var(--line);width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
 .sub-tabs::-webkit-scrollbar{display:none}
@@ -405,9 +454,11 @@ input,textarea{-webkit-appearance:none}
     <button class="tab active" data-v="today"><span class="emo">☀️</span>Сегодня</button>
     <button class="tab" data-v="tasks"><span class="emo">✦</span>Задачи<span class="count" id="cntTasks">0</span></button>
     <button class="tab" data-v="schedule"><span class="emo">🗓</span>Расписание</button>
+    <button class="tab" data-v="orders"><span class="emo">📦</span>Заказы<span class="count" id="cntOrders">0</span></button>
     <button class="tab" data-v="bdays"><span class="emo">🎂</span>Дни рождения<span class="count" id="cntBdays">0</span></button>
     <button class="tab" data-v="clocks"><span class="emo">🌍</span>Время</button>
     <button class="tab" data-v="contacts"><span class="emo">📇</span>База<span class="count" id="cntContacts">0</span></button>
+    <button class="tab" data-v="gr"><span class="emo">🏛</span>GR<span class="count" id="cntGr">0</span></button>
     <button class="tab" data-v="trips"><span class="emo">✈️</span>Трэвел<span class="count" id="cntTrips">0</span></button>
   </nav>
 
@@ -449,13 +500,42 @@ input,textarea{-webkit-appearance:none}
 
   <!-- SCHEDULE -->
   <section class="view" id="v-schedule">
-    <div class="day-nav">
-      <button class="btn icon" id="dayPrev" aria-label="назад">‹</button>
-      <div class="center"><div class="ttl" id="dayTtl"></div><div class="sub" id="daySub"></div></div>
-      <button class="btn icon" id="dayNext" aria-label="вперёд">›</button>
+    <div class="sub-tabs" id="schedSub">
+      <button class="sub-tab active" data-sub="day">📅 День</button>
+      <button class="sub-tab" data-sub="month">🗓 Месяц</button>
     </div>
-    <div style="text-align:center;margin-bottom:14px"><button class="btn sm" id="dayToday">сегодня</button></div>
-    <div class="events" id="eventsList"></div>
+    <div id="sch-day">
+      <div class="day-nav">
+        <button class="btn icon" id="dayPrev" aria-label="назад">‹</button>
+        <div class="center"><div class="ttl" id="dayTtl"></div><div class="sub" id="daySub"></div></div>
+        <button class="btn icon" id="dayNext" aria-label="вперёд">›</button>
+      </div>
+      <div style="text-align:center;margin-bottom:14px"><button class="btn sm" id="dayToday">сегодня</button></div>
+      <div class="events" id="eventsList"></div>
+    </div>
+    <div id="sch-month" class="hide">
+      <div class="day-nav">
+        <button class="btn icon" id="monPrev" aria-label="назад">‹</button>
+        <div class="center"><div class="ttl" id="monTtl"></div><div class="sub">месяц</div></div>
+        <button class="btn icon" id="monNext" aria-label="вперёд">›</button>
+      </div>
+      <div style="text-align:center;margin-bottom:14px"><button class="btn sm" id="monToday">этот месяц</button></div>
+      <div id="monthGrid"></div>
+    </div>
+  </section>
+
+  <!-- ORDERS -->
+  <section class="view" id="v-orders">
+    <div class="search"><input id="orderSearch" type="search" placeholder="Поиск по названию, магазину, заметке…" autocomplete="off"></div>
+    <div class="places-toolbar"><div class="type-filters" id="orderFilters"></div></div>
+    <div id="ordersList"></div>
+  </section>
+
+  <!-- GR -->
+  <section class="view" id="v-gr">
+    <div class="search"><input id="grSearch" type="search" placeholder="Поиск по должности, имени, ведомству, телефону…" autocomplete="off"></div>
+    <div class="places-toolbar"><div class="type-filters" id="grFilters"></div></div>
+    <div id="grList"></div>
   </section>
 
   <!-- BDAYS -->
@@ -563,6 +643,71 @@ const PLACE_TYPES={
   sight:{e:'🎯',l:'место'},
   other:{e:'📍',l:'другое'},
 };
+const ORDER_STATUS={
+  ordered:{l:'заказано',c:'#7AA5C7',e:'🛒'},
+  shipped:{l:'в пути',c:'#E8B65A',e:'🚚'},
+  delivered:{l:'доставлено',c:'#81A684',e:'📬'},
+  cancelled:{l:'отменено',c:'#9C9082',e:'✖'},
+};
+
+/* Структура высшей государственной власти и регионов РК.
+   Имена и контакты заполняешь сама — состав правительства меняется. */
+const GR_POSITIONS={
+  'Высшее руководство':[
+    'Президент Республики Казахстан',
+    'Государственный секретарь',
+    'Премьер-министр',
+    'Председатель Сената Парламента',
+    'Председатель Мажилиса Парламента',
+    'Руководитель Администрации Президента',
+  ],
+  'Министры':[
+    'Министр иностранных дел',
+    'Министр внутренних дел',
+    'Министр обороны',
+    'Министр финансов',
+    'Министр национальной экономики',
+    'Министр юстиции',
+    'Министр здравоохранения',
+    'Министр просвещения',
+    'Министр науки и высшего образования',
+    'Министр культуры и информации',
+    'Министр энергетики',
+    'Министр промышленности и строительства',
+    'Министр транспорта',
+    'Министр сельского хозяйства',
+    'Министр труда и социальной защиты населения',
+    'Министр цифрового развития, инноваций и аэрокосмической промышленности',
+    'Министр экологии и природных ресурсов',
+    'Министр водных ресурсов и ирригации',
+    'Министр туризма и спорта',
+  ],
+  'Акимы городов республиканского значения':[
+    'Аким г. Астана',
+    'Аким г. Алматы',
+    'Аким г. Шымкент',
+  ],
+  'Акимы областей':[
+    'Аким Абайской области',
+    'Аким Акмолинской области',
+    'Аким Актюбинской области',
+    'Аким Алматинской области',
+    'Аким Атырауской области',
+    'Аким Восточно-Казахстанской области',
+    'Аким Жамбылской области',
+    'Аким Жетысуской области',
+    'Аким Западно-Казахстанской области',
+    'Аким Карагандинской области',
+    'Аким Костанайской области',
+    'Аким Кызылординской области',
+    'Аким Мангистауской области',
+    'Аким Павлодарской области',
+    'Аким Северо-Казахстанской области',
+    'Аким Туркестанской области',
+    'Аким Улытауской области',
+  ],
+};
+const GR_CAT_ORDER=Object.keys(GR_POSITIONS);
 
 /* STATE */
 const State={
@@ -574,14 +719,21 @@ const State={
   contacts:Store.get('contacts',[]),
   trips:Store.get('trips',[]),
   places:Store.get('places',[]),
+  orders:Store.get('orders',[]),
+  gr:Store.get('gr',[]),
   ai:Store.get('ai',{key:''}),
   notif:Store.get('notif',{enabled:false,time:'08:30',lastDate:''}),
   view:'today',
   travelSub:'trips',
+  schedSub:'day',
   scheduleDate:todayISO(),
   contactQuery:'',
   placeQuery:'',
   placeFilter:'all',
+  orderQuery:'',
+  orderFilter:'all',
+  grQuery:'',
+  grFilter:'all',
 };
 function save(k){Store.set(k,State[k])}
 
@@ -1067,6 +1219,199 @@ async function fetchBriefing(id){
 }
 
 /* ============================================================
+   МЕСЯЧНЫЙ КАЛЕНДАРЬ
+   ============================================================ */
+function shiftMonth(n){
+  const[y,m]=State.scheduleDate.split('-').map(Number);
+  const dt=new Date(y,m-1+n,1);
+  State.scheduleDate=`${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+  if(State.schedSub==='month')renderMonth();else renderSchedule();
+}
+function switchScheduleSub(sub){
+  State.schedSub=sub;
+  $$('#schedSub .sub-tab').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));
+  $('#sch-day').classList.toggle('hide',sub!=='day');
+  $('#sch-month').classList.toggle('hide',sub!=='month');
+  if(sub==='month')renderMonth();else renderSchedule();
+}
+function renderMonth(){
+  const[y,m]=State.scheduleDate.split('-').map(Number);
+  $('#monTtl').textContent=`${RU.months[m-1]} ${y}`;
+  const first=new Date(y,m-1,1);
+  const firstDow=(first.getDay()+6)%7;
+  const daysInMonth=new Date(y,m,0).getDate();
+  const cells=[];
+  for(let i=firstDow-1;i>=0;i--){
+    const d=new Date(y,m-1,-i);cells.push({date:d,other:true});
+  }
+  for(let d=1;d<=daysInMonth;d++)cells.push({date:new Date(y,m-1,d),other:false});
+  while(cells.length<42){
+    const last=cells[cells.length-1].date;
+    cells.push({date:new Date(last.getFullYear(),last.getMonth(),last.getDate()+1),other:true});
+  }
+  const t0=todayISO();
+  const bdaysMap=new Map();
+  State.bdays.forEach(b=>{const k=`${pad(b.month)}-${pad(b.day)}`;if(!bdaysMap.has(k))bdaysMap.set(k,[]);bdaysMap.get(k).push(b)});
+  const dowLabels=['пн','вт','ср','чт','пт','сб','вс'];
+  const dowH=dowLabels.map((d,i)=>`<div class="dow ${i>=5?'we':''}">${d}</div>`).join('');
+  const html=cells.map(c=>{
+    const iso=`${c.date.getFullYear()}-${pad(c.date.getMonth()+1)}-${pad(c.date.getDate())}`;
+    const dow=(c.date.getDay()+6)%7;
+    const dayEvents=State.events.filter(e=>e.date===iso).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+    const dayBdays=bdaysMap.get(`${pad(c.date.getMonth()+1)}-${pad(c.date.getDate())}`)||[];
+    const isToday=iso===t0;
+    const items=[];
+    dayBdays.forEach(b=>items.push(`<div class="d-bday">🎂 ${esc(b.name)}</div>`));
+    dayEvents.forEach(e=>{
+      const col=e.color||'#E07A5F';
+      items.push(`<div class="d-evt" style="background:${col}28;color:${col}">${e.start?esc(e.start)+' ':''}${esc(e.title)}</div>`);
+    });
+    const visible=items.slice(0,3).join('');
+    const extra=items.length>3?`<div class="d-more">+${items.length-3}</div>`:'';
+    return `<div class="day ${c.other?'other':''} ${isToday?'today':''} ${dow>=5?'we':''}" data-iso="${iso}">
+      <div class="d-num">${c.date.getDate()}</div>${visible}${extra}</div>`;
+  }).join('');
+  $('#monthGrid').innerHTML=`<div class="month-head">${dowH}</div><div class="month-grid">${html}</div>`;
+  $$('.day',$('#monthGrid')).forEach(el=>el.addEventListener('click',()=>{
+    State.scheduleDate=el.dataset.iso;
+    switchScheduleSub('day');
+  }));
+}
+
+/* ============================================================
+   ЗАКАЗЫ
+   ============================================================ */
+function renderOrderFilters(){
+  const root=$('#orderFilters');
+  const items=[['all','все',null],...Object.entries(ORDER_STATUS).map(([k,v])=>[k,v.l,v.e])];
+  root.innerHTML=items.map(([k,l,e])=>{
+    const cnt=k==='all'?State.orders.length:State.orders.filter(o=>o.status===k).length;
+    return `<button data-f="${k}" class="${State.orderFilter===k?'sel':''}">${e?e+' ':''}${l}${cnt?` · ${cnt}`:''}</button>`;
+  }).join('');
+  $$('button',root).forEach(b=>b.addEventListener('click',()=>{State.orderFilter=b.dataset.f;renderOrders()}));
+}
+function renderOrders(){
+  renderOrderFilters();
+  const root=$('#ordersList');
+  if(!State.orders.length){
+    root.innerHTML=`<div class="empty"><span class="big">📦</span>пока заказов нет<br><span class="subtle">отслеживай покупки, доставки, подарки руководителю</span></div>`;return;
+  }
+  const q=State.orderQuery.trim().toLowerCase();
+  let arr=State.orders.filter(o=>{
+    if(q&&![o.title,o.source,o.note,o.forWhom,o.tracking].join(' ').toLowerCase().includes(q))return false;
+    if(State.orderFilter!=='all'&&o.status!==State.orderFilter)return false;
+    return true;
+  });
+  if(!arr.length){root.innerHTML=`<div class="empty">ничего не нашлось</div>`;return}
+  // Группировка по статусу
+  const ord={ordered:0,shipped:1,delivered:2,cancelled:3};
+  const groups=new Map();
+  for(const o of arr){if(!groups.has(o.status))groups.set(o.status,[]);groups.get(o.status).push(o)}
+  const sortedKeys=[...groups.keys()].sort((a,b)=>(ord[a]??9)-(ord[b]??9));
+  root.innerHTML=sortedKeys.map(k=>{
+    const st=ORDER_STATUS[k];
+    const items=groups.get(k).sort((a,b)=>(b.orderDate||'').localeCompare(a.orderDate||''));
+    return `<div class="order-group">
+      <h3>${st.e} ${st.l}<span class="n">${items.length}</span></h3>
+      ${items.map(o=>orderRow(o,st)).join('')}
+    </div>`;
+  }).join('');
+  $$('.order',root).forEach(el=>el.addEventListener('click',()=>openOrderModal(el.dataset.id)));
+}
+function orderRow(o,st){
+  const meta=[];
+  if(o.source)meta.push(esc(o.source));
+  if(o.orderDate)meta.push(`заказано ${fmtDateShort(o.orderDate)}`);
+  if(o.eta&&o.status!=='delivered'&&o.status!=='cancelled')meta.push(`<span class="chip ${etaChipClass(o.eta)}">${etaLabel(o.eta)}</span>`);
+  if(o.tracking)meta.push(`№ ${esc(o.tracking)}`);
+  if(o.forWhom)meta.push(`для: ${esc(o.forWhom)}`);
+  const priceStr=o.price?`${esc(o.price)}${o.currency?' '+esc(o.currency):''}`:'';
+  return `<div class="order" data-id="${o.id}">
+    <div class="st" style="background:${st.c}"></div>
+    <div class="body">
+      <div class="top"><div class="nm">${esc(o.title)}</div>${priceStr?`<div class="pr">${priceStr}</div>`:''}</div>
+      ${meta.length?`<div class="meta">${meta.join(' · ')}</div>`:''}
+      ${o.link?`<div class="meta"><a href="${esc(o.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--coral)">открыть ссылку →</a></div>`:''}
+      ${o.note?`<div class="nt">${esc(o.note)}</div>`:''}
+    </div>
+  </div>`;
+}
+function etaLabel(iso){
+  if(!iso)return'';
+  const d=daysBetween(todayISO(),iso);
+  if(d<0)return`ожидалось ${fmtDateShort(iso)}`;
+  if(d===0)return'сегодня';
+  if(d===1)return'завтра';
+  if(d<=7)return`через ${d} ${plural(d,'день','дня','дней')}`;
+  return fmtDateShort(iso);
+}
+function etaChipClass(iso){
+  const d=daysBetween(todayISO(),iso);
+  if(d<0)return'late';if(d<=1)return'today';if(d<=7)return'soon';return'';
+}
+
+/* ============================================================
+   GR — министры, акимы, гос. контакты
+   ============================================================ */
+function seedGR(){
+  const arr=[];
+  GR_CAT_ORDER.forEach(cat=>{
+    GR_POSITIONS[cat].forEach(pos=>arr.push({id:uid(),cat,position:pos,name:'',org:'',phone:'',email:'',address:'',note:'',tags:[]}));
+  });
+  State.gr=arr;save('gr');renderAll();toast('структура добавлена — заполни актуальные имена');
+}
+function renderGrFilters(){
+  const root=$('#grFilters');
+  const items=[['all','все',null],...GR_CAT_ORDER.map(c=>[c,c,null])];
+  root.innerHTML=items.map(([k,l])=>{
+    const cnt=k==='all'?State.gr.length:State.gr.filter(g=>g.cat===k).length;
+    return `<button data-f="${esc(k)}" class="${State.grFilter===k?'sel':''}">${esc(l)}${cnt?` · ${cnt}`:''}</button>`;
+  }).join('');
+  $$('button',root).forEach(b=>b.addEventListener('click',()=>{State.grFilter=b.dataset.f;renderGr()}));
+}
+function renderGr(){
+  const root=$('#grList');
+  if(!State.gr.length){
+    root.innerHTML=`<div class="gr-seed">
+      <h3>🏛 GR-база</h3>
+      <p>Здесь — структура высшего руководства, министры и акимы РК. Можно загрузить шаблон со всеми позициями (имена и контакты заполнишь сама).</p>
+      <button class="btn primary" onclick="seedGR()">Заполнить структуру РК</button>
+      <div style="margin-top:8px"><button class="btn ghost sm" onclick="openGrModal()">или добавить вручную</button></div>
+    </div>`;
+    return;
+  }
+  renderGrFilters();
+  const q=State.grQuery.trim().toLowerCase();
+  let arr=State.gr.filter(g=>{
+    if(q&&![g.position,g.name,g.org,g.phone,g.email,g.note,(g.tags||[]).join(' ')].join(' ').toLowerCase().includes(q))return false;
+    if(State.grFilter!=='all'&&g.cat!==State.grFilter)return false;
+    return true;
+  });
+  if(!arr.length){root.innerHTML=`<div class="empty">никого не нашлось</div>`;return}
+  const groups=new Map();
+  for(const g of arr){if(!groups.has(g.cat))groups.set(g.cat,[]);groups.get(g.cat).push(g)}
+  const sortedKeys=[...groups.keys()].sort((a,b)=>{const ia=GR_CAT_ORDER.indexOf(a),ib=GR_CAT_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)});
+  root.innerHTML=sortedKeys.map(cat=>{
+    const items=groups.get(cat);
+    return `<div class="gr-cat">
+      <h3>${esc(cat)}<span class="n">${items.length}</span></h3>
+      <div class="gr-grid">
+        ${items.map(g=>`<div class="gr" data-id="${g.id}">
+          <div class="pos">${esc(g.position)}</div>
+          <div class="nm ${g.name?'':'empty'}">${g.name?esc(g.name):'не заполнено'}</div>
+          ${g.org?`<div class="org">${esc(g.org)}</div>`:''}
+          ${(g.phone||g.email)?`<div class="links">
+            ${g.phone?`<a href="tel:${esc(g.phone)}" onclick="event.stopPropagation()">📞 ${esc(g.phone)}</a>`:''}
+            ${g.email?`<a href="mailto:${esc(g.email)}" onclick="event.stopPropagation()">✉ ${esc(g.email)}</a>`:''}
+          </div>`:''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  $$('.gr',root).forEach(el=>el.addEventListener('click',()=>openGrModal(el.dataset.id)));
+}
+
+/* ============================================================
    TODAY
    ============================================================ */
 function renderToday(){
@@ -1145,6 +1490,13 @@ function buildMorningDigest(){
     hasAny=true;
     out.push(`✈️ Скоро поездки: ${trips.map(t=>{const d=daysBetween(t0,t.start);return `${t.dest} ${d===0?'сегодня':'через '+d+' '+plural(d,'день','дня','дней')}`}).join(', ')}`);
   }
+  // Заказы — доставка сегодня/завтра/просрочка
+  const ordsActive=State.orders.filter(o=>o.eta&&o.status!=='delivered'&&o.status!=='cancelled');
+  const ordToday=ordsActive.filter(o=>{const d=daysBetween(t0,o.eta);return d>=-30&&d<=1});
+  if(ordToday.length){
+    hasAny=true;
+    out.push(`📦 Заказы: ${ordToday.map(o=>{const d=daysBetween(t0,o.eta);return `${o.title} (${d<0?'опаздывает':(d===0?'сегодня':'завтра')})`}).join(', ')}`);
+  }
   return{has:hasAny,lines:out,short:out.join(' · ')};
 }
 async function fireMorningNotif(){
@@ -1198,7 +1550,9 @@ function searchAll(q){
   const contacts=State.contacts.filter(c=>hit(c.name)||hit(c.role)||hit(c.phone)||hit(c.email)||hit(c.note)||(c.tags||[]).some(hit)).slice(0,limit).map(c=>({type:'contact',id:c.id,t:c.name,s:[c.role,c.phone,c.email].filter(Boolean).join(' · '),em:'📇'}));
   const trips=State.trips.filter(t=>hit(t.dest)||hit(t.country)||hit(t.purpose)||hit(t.note)).slice(0,limit).map(t=>({type:'trip',id:t.id,t:t.dest,s:[t.country,t.purpose,fmtDateShort(t.start)].filter(Boolean).join(' · '),em:'✈️'}));
   const places=State.places.filter(p=>hit(p.name)||hit(p.city)||hit(p.country)||hit(p.note)).slice(0,limit).map(p=>({type:'place',id:p.id,t:p.name,s:`${PLACE_TYPES[p.type]?.l||''}${p.city?' · '+p.city:''}${p.country?', '+p.country:''}`,em:PLACE_TYPES[p.type]?.e||'📍'}));
-  return{tasks,events,bdays,contacts,trips,places};
+  const orders=State.orders.filter(o=>hit(o.title)||hit(o.source)||hit(o.note)||hit(o.tracking)||hit(o.forWhom)).slice(0,limit).map(o=>({type:'order',id:o.id,t:o.title,s:`${ORDER_STATUS[o.status]?.l||''}${o.source?' · '+o.source:''}${o.eta?' · '+etaLabel(o.eta):''}`,em:ORDER_STATUS[o.status]?.e||'📦'}));
+  const gr=State.gr.filter(g=>hit(g.position)||hit(g.name)||hit(g.org)||hit(g.phone)||hit(g.email)||hit(g.note)||(g.tags||[]).some(hit)).slice(0,limit).map(g=>({type:'gr',id:g.id,t:g.name||g.position,s:`${g.name?g.position:g.cat}${g.org?' · '+g.org:''}`,em:'🏛'}));
+  return{tasks,events,bdays,contacts,trips,places,orders,gr};
 }
 function openSearchModal(){
   openSheet(`<h2>Поиск<button class="x" data-close>×</button></h2>
@@ -1213,15 +1567,17 @@ function openSearchModal(){
       else if(it.type==='contact'){switchView('contacts');setTimeout(()=>openContactModal(it.id),120)}
       else if(it.type==='trip'){switchView('trips');setTimeout(()=>openTripModal(it.id),120)}
       else if(it.type==='place'){switchView('trips');switchTravelSub('places');setTimeout(()=>openPlaceModal(it.id),120)}
+      else if(it.type==='order'){switchView('orders');setTimeout(()=>openOrderModal(it.id),120)}
+      else if(it.type==='gr'){switchView('gr');setTimeout(()=>openGrModal(it.id),120)}
     }
     function render(){
       const q=inp.value;const r=searchAll(q);
       if(!r){
         out.innerHTML=`<div class="gs-hint">Печатай, чтобы искать по всему NoteAI<div class="kbds" style="margin-top:10px"><span class="kbd">⌘K</span> — открыть поиск</div></div>`;return;
       }
-      const all=[...r.tasks,...r.events,...r.bdays,...r.contacts,...r.trips,...r.places];
+      const all=[...r.tasks,...r.events,...r.bdays,...r.contacts,...r.trips,...r.places,...r.orders,...r.gr];
       if(!all.length){out.innerHTML=`<div class="gs-hint">ничего не нашлось</div>`;return}
-      const groups=[['Задачи',r.tasks],['События',r.events],['Дни рождения',r.bdays],['Контакты',r.contacts],['Поездки',r.trips],['Места',r.places]].filter(([,a])=>a.length);
+      const groups=[['Задачи',r.tasks],['События',r.events],['Заказы',r.orders],['Дни рождения',r.bdays],['Контакты',r.contacts],['GR',r.gr],['Поездки',r.trips],['Места',r.places]].filter(([,a])=>a.length);
       out.innerHTML=groups.map(([t,a])=>`<div class="gs-group"><h4>${t}</h4>${a.map(it=>`<div class="gs-item" data-tp="${it.type}" data-id="${it.id}"><span class="em">${it.em}</span><div class="body"><div class="t">${esc(it.t)}</div><div class="s">${esc(it.s||'')}</div></div></div>`).join('')}</div>`).join('');
       $$('.gs-item',out).forEach(el=>el.addEventListener('click',()=>{const tp=el.dataset.tp;const id=el.dataset.id;const item=all.find(x=>x.type===tp&&x.id===id);go(item)}));
     }
@@ -1435,6 +1791,69 @@ function openTripModal(id){
     });
   });
 }
+function openOrderModal(id){
+  const o=id?State.orders.find(x=>x.id===id):{title:'',source:'',price:'',currency:'₸',orderDate:todayISO(),eta:'',status:'ordered',tracking:'',link:'',note:'',forWhom:''};
+  if(!o)return;
+  openSheet(`<h2>${id?'Заказ':'Новый заказ'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Что заказали</label><input id="t" autofocus value="${esc(o.title)}" maxlength="120"></div>
+    <div class="row">
+      <div class="field" style="flex:2"><label>Цена</label><input id="pr" value="${esc(o.price||'')}" placeholder="например, 45 000" maxlength="20"></div>
+      <div class="field"><label>Валюта</label>
+        <select id="cu">${['₸','$','€','₽','¥','£'].map(c=>`<option value="${c}" ${o.currency===c?'selected':''}>${c}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label>Магазин / источник</label><input id="src" value="${esc(o.source||'')}" placeholder="например, Wildberries, Mango Office" maxlength="80"></div>
+    <div class="row"><div class="field"><label>Дата заказа</label><input id="od" type="date" value="${esc(o.orderDate||'')}"></div>
+      <div class="field"><label>Ожидается</label><input id="eta" type="date" value="${esc(o.eta||'')}"></div></div>
+    <div class="field"><label>Статус</label>
+      <div class="seg" id="st">${Object.entries(ORDER_STATUS).map(([k,v])=>`<button data-v="${k}" class="${o.status===k?'sel':''}">${v.e} ${v.l}</button>`).join('')}</div>
+    </div>
+    <div class="row"><div class="field"><label>Трек-номер</label><input id="tr" value="${esc(o.tracking||'')}" maxlength="60"></div>
+      <div class="field"><label>Для кого</label><input id="fw" value="${esc(o.forWhom||'')}" placeholder="шеф / себе / офис" maxlength="60"></div></div>
+    <div class="field"><label>Ссылка</label><input id="lk" type="url" value="${esc(o.link||'')}" placeholder="https://…"></div>
+    <div class="field"><label>Заметка</label><textarea id="nt" maxlength="400">${esc(o.note||'')}</textarea></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    let status=o.status;
+    s.querySelectorAll('#st button').forEach(b=>b.addEventListener('click',()=>{status=b.dataset.v;s.querySelectorAll('#st button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const obj={title:s.querySelector('#t').value.trim(),price:s.querySelector('#pr').value.trim(),currency:s.querySelector('#cu').value,source:s.querySelector('#src').value.trim(),orderDate:s.querySelector('#od').value,eta:s.querySelector('#eta').value,status,tracking:s.querySelector('#tr').value.trim(),forWhom:s.querySelector('#fw').value.trim(),link:s.querySelector('#lk').value.trim(),note:s.querySelector('#nt').value.trim()};
+      if(!obj.title){toast('добавь название');return}
+      if(id)Object.assign(o,obj);else State.orders.push({id:uid(),...obj});
+      save('orders');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить заказ?')){State.orders=State.orders.filter(x=>x.id!==id);save('orders');closeSheet();renderAll()}
+    });
+  });
+}
+function openGrModal(id){
+  const g=id?State.gr.find(x=>x.id===id):{cat:'Министры',position:'',name:'',org:'',phone:'',email:'',address:'',note:'',tags:[]};
+  if(!g)return;
+  const catOpts=GR_CAT_ORDER.map(c=>`<option value="${esc(c)}" ${g.cat===c?'selected':''}>${esc(c)}</option>`).join('');
+  openSheet(`<h2>${id?'GR-контакт':'Новый контакт'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Категория</label><select id="cat">${catOpts}</select></div>
+    <div class="field"><label>Должность</label><input id="pos" value="${esc(g.position||'')}" maxlength="180"></div>
+    <div class="field"><label>Имя</label><input id="nm" autofocus value="${esc(g.name||'')}" placeholder="ФИО" maxlength="100"></div>
+    <div class="field"><label>Ведомство / организация</label><input id="org" value="${esc(g.org||'')}" maxlength="120"></div>
+    <div class="row"><div class="field"><label>Телефон</label><input id="ph" value="${esc(g.phone||'')}" maxlength="40"></div>
+      <div class="field"><label>Email</label><input id="em" value="${esc(g.email||'')}" maxlength="80"></div></div>
+    <div class="field"><label>Адрес приёмной</label><input id="ad" value="${esc(g.address||'')}" maxlength="160"></div>
+    <div class="field"><label>Теги (через запятую)</label><input id="tg" value="${esc((g.tags||[]).join(', '))}"></div>
+    <div class="field"><label>Заметка (помощник, секретарь, контекст)</label><textarea id="nt" maxlength="600">${esc(g.note||'')}</textarea></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const o={cat:s.querySelector('#cat').value,position:s.querySelector('#pos').value.trim(),name:s.querySelector('#nm').value.trim(),org:s.querySelector('#org').value.trim(),phone:s.querySelector('#ph').value.trim(),email:s.querySelector('#em').value.trim(),address:s.querySelector('#ad').value.trim(),tags:s.querySelector('#tg').value.split(',').map(x=>x.trim()).filter(Boolean),note:s.querySelector('#nt').value.trim()};
+      if(!o.position){toast('добавь должность');return}
+      if(id)Object.assign(g,o);else State.gr.push({id:uid(),...o});
+      save('gr');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить?')){State.gr=State.gr.filter(x=>x.id!==id);save('gr');closeSheet();renderAll()}
+    });
+  });
+}
 function openPlaceModal(id,prefilTripId){
   let p=id?State.places.find(x=>x.id===id):null;
   if(id&&!p)return;
@@ -1491,7 +1910,7 @@ function openPlaceModal(id,prefilTripId){
 /* ============================================================
    ROUTING / RENDER
    ============================================================ */
-const ADD_FOR={tasks:()=>openTaskModal(),schedule:()=>openEventModal(),bdays:()=>openBdayModal(),clocks:()=>openClockModal(),contacts:()=>openContactModal(),trips:()=>{State.travelSub==='places'?openPlaceModal():openTripModal()}};
+const ADD_FOR={tasks:()=>openTaskModal(),schedule:()=>openEventModal(),orders:()=>openOrderModal(),bdays:()=>openBdayModal(),clocks:()=>openClockModal(),contacts:()=>openContactModal(),gr:()=>openGrModal(),trips:()=>{State.travelSub==='places'?openPlaceModal():openTripModal()}};
 function switchView(v){
   State.view=v;
   $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
@@ -1513,17 +1932,22 @@ function updateCounts(){
   $('#cntTrips').textContent=tn;
   $('#cntTrips2').textContent=tn;
   $('#cntPlaces').textContent=State.places.length||'';
+  $('#cntOrders').textContent=State.orders.filter(o=>o.status!=='delivered'&&o.status!=='cancelled').length||'';
+  $('#cntGr').textContent=State.gr.filter(g=>g.name).length||'';
   $('#setDot').classList.toggle('hide',State.notif.enabled||State.settings.name);
 }
 function renderAll(){
   renderGreet();updateCounts();
-  renderToday();renderMatrix();renderSchedule();renderBdays();renderClocks();renderContacts();renderPlaces();renderTrips();
+  renderToday();renderMatrix();renderSchedule();
+  if(State.schedSub==='month')renderMonth();
+  renderOrders();renderBdays();renderClocks();renderContacts();renderGr();renderPlaces();renderTrips();
   renderNotifBanner();
 }
 
 /* INIT */
 $$('#tabs .tab').forEach(t=>t.addEventListener('click',()=>switchView(t.dataset.v)));
 $$('#travelSub .sub-tab').forEach(b=>b.addEventListener('click',()=>switchTravelSub(b.dataset.sub)));
+$$('#schedSub .sub-tab').forEach(b=>b.addEventListener('click',()=>switchScheduleSub(b.dataset.sub)));
 $$('[data-go]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.go)));
 $('#setBtn').addEventListener('click',openSettingsModal);
 $('#searchBtn').addEventListener('click',openSearchModal);
@@ -1531,8 +1955,13 @@ $('#addBtn').addEventListener('click',()=>{const fn=ADD_FOR[State.view];fn&&fn()
 $('#dayPrev').addEventListener('click',()=>shiftDay(-1));
 $('#dayNext').addEventListener('click',()=>shiftDay(1));
 $('#dayToday').addEventListener('click',()=>{State.scheduleDate=todayISO();renderSchedule()});
+$('#monPrev').addEventListener('click',()=>shiftMonth(-1));
+$('#monNext').addEventListener('click',()=>shiftMonth(1));
+$('#monToday').addEventListener('click',()=>{State.scheduleDate=todayISO();renderMonth()});
 $('#contactSearch').addEventListener('input',e=>{State.contactQuery=e.target.value;renderContacts()});
 $('#placeSearch').addEventListener('input',e=>{State.placeQuery=e.target.value;renderPlaces()});
+$('#orderSearch').addEventListener('input',e=>{State.orderQuery=e.target.value;renderOrders()});
+$('#grSearch').addEventListener('input',e=>{State.grQuery=e.target.value;renderGr()});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')closeSheet();
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearchModal()}
