@@ -1,0 +1,19 @@
+{
+  "name": "NoteAI — рабочий стол ассистента",
+  "short_name": "NoteAI",
+  "description": "Единый рабочий стол персонального ассистента: задачи, расписание, дни рождения, мировое время, контакты, поездки и места.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6EC",
+  "theme_color": "#FBF6EC",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}
