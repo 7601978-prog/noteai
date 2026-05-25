@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FBF6EC">
+<title>NoteAI — рабочий стол ассистента</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#FBF6EC;
+  --paper:#FFFCF5;
+  --paper-2:#F5EFE0;
+  --ink:#2A2520;
+  --ink-2:#5C5247;
+  --muted:#9C9082;
+  --line:#E8DFCB;
+  --line-2:#D7CCB3;
+  --coral:#E07A5F;
+  --coral-soft:#FBE3DA;
+  --sage:#81A684;
+  --sage-soft:#DEEBDC;
+  --amber:#E8B65A;
+  --amber-soft:#FAEDD0;
+  --lilac:#B395BD;
+  --lilac-soft:#ECDFF0;
+  --rose:#D17074;
+  --sky:#7AA5C7;
+  --shadow:0 1px 2px rgba(58,42,20,.04),0 8px 24px -8px rgba(58,42,20,.12);
+  --shadow-lg:0 4px 12px rgba(58,42,20,.06),0 24px 48px -16px rgba(58,42,20,.18);
+  --r:14px;
+  --r-sm:10px;
+  --r-lg:20px;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{min-height:100dvh;background-image:radial-gradient(circle at 20% -10%,#F3E6CA 0%,transparent 40%),radial-gradient(circle at 90% 10%,#EFE2D9 0%,transparent 35%)}
+.app{max-width:1180px;margin:0 auto;padding:18px 20px 80px;min-height:100dvh}
+h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;margin:0;color:var(--ink)}
+h1{font-size:34px;line-height:1.05;font-variation-settings:"opsz" 96}
+h2{font-size:22px;line-height:1.15;font-variation-settings:"opsz" 48}
+h3{font-size:17px;line-height:1.2;font-variation-settings:"opsz" 24}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+input,textarea,select{font:inherit;color:inherit}
+input,textarea{-webkit-appearance:none}
+
+/* HEADER */
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .logo{font-family:'Fraunces',serif;font-weight:600;font-size:30px;font-variation-settings:"opsz" 96;letter-spacing:-.02em}
+.brand .logo .ai{color:var(--coral);font-style:italic}
+.brand .tag{color:var(--muted);font-size:13px;display:none}
+@media(min-width:640px){.brand .tag{display:inline}}
+.user{display:flex;align-items:center;gap:8px}
+.user .who{font-size:13px;color:var(--ink-2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--paper);box-shadow:var(--shadow);transition:transform .15s ease,background .15s;color:var(--ink-2);position:relative}
+.icon-btn:hover{transform:translateY(-1px);background:#fff;color:var(--ink)}
+.icon-btn:active{transform:scale(.96)}
+.icon-btn .pulse{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 0 rgba(224,122,95,.5);animation:bell 2s infinite}
+@keyframes bell{0%,100%{box-shadow:0 0 0 0 rgba(224,122,95,.5)}50%{box-shadow:0 0 0 6px rgba(224,122,95,0)}}
+
+/* TABS */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;margin:-4px -2px 18px;scrollbar-width:none;-ms-overflow-style:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:var(--paper);color:var(--ink-2);font-weight:500;font-size:14px;box-shadow:var(--shadow);transition:all .15s ease;white-space:nowrap}
+.tab .emo{font-size:15px}
+.tab:hover{color:var(--ink)}
+.tab.active{background:var(--ink);color:var(--paper);box-shadow:0 6px 18px -6px rgba(42,37,32,.5)}
+.tab .count{background:rgba(0,0,0,.06);padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.tab.active .count{background:rgba(255,255,255,.15);color:var(--paper)}
+
+/* VIEWS */
+.view{display:none;animation:fadein .25s ease}
+.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* CARDS */
+.card{background:var(--paper);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.card+.card{margin-top:14px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-h h3{display:flex;align-items:center;gap:8px}
+.card-h .emo{font-size:18px}
+.subtle{color:var(--muted);font-size:13px}
+.muted{color:var(--muted)}
+.empty{text-align:center;padding:24px 12px;color:var(--muted);font-size:14px}
+.empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.7}
+
+/* TODAY GRID */
+.greet{margin-bottom:18px}
+.greet .hi{font-family:'Fraunces',serif;font-size:30px;font-variation-settings:"opsz" 96;line-height:1.1;letter-spacing:-.01em}
+.greet .hi .name{color:var(--coral)}
+.greet .date{color:var(--muted);margin-top:4px;font-size:14px;text-transform:capitalize}
+.today-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:760px){.today-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1080px){.today-grid{grid-template-columns:1.2fr 1fr 1fr}}
+.today-grid .span2{grid-column:1/-1}
+@media(min-width:760px){.today-grid .span2{grid-column:span 2}}
+
+/* CHIPS / BADGES */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:500;background:var(--paper-2);color:var(--ink-2)}
+.chip.coral{background:var(--coral-soft);color:#A04A33}
+.chip.sage{background:var(--sage-soft);color:#46684A}
+.chip.amber{background:var(--amber-soft);color:#8C6620}
+.chip.lilac{background:var(--lilac-soft);color:#6E5279}
+.chip.late{background:#FCD9D6;color:#B23B3B}
+.chip.today{background:#FFE3A8;color:#8C6620}
+.chip.soon{background:#FFEDD8;color:#A0571A}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:var(--r-sm);font-size:14px;font-weight:600;background:var(--paper-2);color:var(--ink);transition:all .15s ease;border:1px solid var(--line-2)}
+.btn:hover{background:#EDE3CD}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.primary:hover{background:#3a342d}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-2);padding:6px 10px}
+.btn.ghost:hover{background:rgba(0,0,0,.04);color:var(--ink)}
+.btn.danger{color:#B23B3B}
+.btn.danger:hover{background:#FCD9D6;border-color:#F0B6B1}
+.btn.sm{padding:6px 10px;font-size:13px}
+.btn.icon{width:36px;height:36px;padding:0;justify-content:center}
+.add-btn{position:fixed;bottom:18px;right:18px;width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--paper);box-shadow:0 12px 28px -6px rgba(42,37,32,.5);font-size:24px;display:flex;align-items:center;justify-content:center;z-index:30;transition:transform .15s}
+.add-btn:hover{transform:translateY(-2px)}
+.add-btn:active{transform:scale(.96)}
+
+/* TASKS — matrix */
+.matrix{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:760px){.matrix{grid-template-columns:1fr 1fr}}
+.quad{background:var(--paper);border-radius:var(--r-lg);padding:16px;border:1px solid var(--line);box-shadow:var(--shadow);min-height:200px;display:flex;flex-direction:column}
+.quad.ui{border-top:4px solid var(--coral)}
+.quad.iu{border-top:4px solid var(--sage)}
+.quad.un{border-top:4px solid var(--amber)}
+.quad.nn{border-top:4px solid var(--lilac)}
+.quad-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:8px}
+.quad-h .ttl{font-family:'Fraunces',serif;font-weight:600;font-size:16px;font-variation-settings:"opsz" 24}
+.quad-h .sub{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.quad-h .n{margin-left:auto;background:var(--paper-2);color:var(--ink-2);padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600}
+.quad form.add{display:flex;gap:6px;margin-bottom:10px}
+.quad form.add input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 11px;font-size:14px;outline:none;transition:border .15s}
+.quad form.add input:focus{border-color:var(--ink-2)}
+.quad form.add button{padding:8px 12px;border-radius:var(--r-sm);background:var(--ink);color:var(--paper);font-weight:600;font-size:13px}
+.tasklist{display:flex;flex-direction:column;gap:6px;flex:1}
+.task{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:var(--r-sm);background:var(--bg);border:1px solid transparent;transition:background .15s,border .15s}
+.task:hover{background:#F4ECDB;border-color:var(--line)}
+.task .chk{flex:0 0 18px;width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line-2);margin-top:2px;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer}
+.task .chk:hover{border-color:var(--ink-2)}
+.task.done .chk{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.task.done .chk::before{content:"✓";font-size:12px}
+.task .body{flex:1;min-width:0}
+.task .txt{font-size:14px;line-height:1.35;word-break:break-word}
+.task.done .txt{text-decoration:line-through;color:var(--muted)}
+.task .meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.task .acts{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.task:hover .acts,.task:focus-within .acts{opacity:1}
+.task .acts button{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+.task .acts button:hover{background:var(--paper-2);color:var(--ink)}
+
+/* SCHEDULE */
+.day-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}
+.day-nav .center{text-align:center}
+.day-nav .ttl{font-family:'Fraunces',serif;font-size:20px;font-variation-settings:"opsz" 48;text-transform:capitalize}
+.day-nav .sub{font-size:12px;color:var(--muted);text-transform:capitalize}
+.events{display:flex;flex-direction:column;gap:8px}
+.event{display:flex;gap:12px;padding:12px 14px;background:var(--paper);border-radius:var(--r);border-left:4px solid var(--coral);box-shadow:var(--shadow);align-items:center;cursor:pointer;transition:transform .12s,box-shadow .15s}
+.event:hover{transform:translateX(2px);box-shadow:var(--shadow-lg)}
+.event .time{flex:0 0 78px;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;color:var(--ink)}
+.event .time .end{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.event .info{flex:1;min-width:0}
+.event .info .t{font-weight:600;font-size:15px}
+.event .info .n{color:var(--muted);font-size:13px;margin-top:2px}
+
+/* BDAYS */
+.bday-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.bday{display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);cursor:pointer;transition:transform .12s,box-shadow .15s;border:1px solid var(--line)}
+.bday:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.bday.soon{background:linear-gradient(135deg,#FFF6E1,#FFE9D2);border-color:#F1D7A8}
+.bday.today{background:linear-gradient(135deg,#FBE3DA,#F8D5BC);border-color:#E8B6A0;animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:var(--shadow)}50%{box-shadow:0 0 0 8px rgba(224,122,95,.1),var(--shadow)}}
+.bday .av{flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--coral-soft);color:var(--coral);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:18px}
+.bday .info{flex:1;min-width:0}
+.bday .nm{font-weight:600}
+.bday .dt{font-size:12.5px;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+
+/* CLOCKS */
+.clocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.clock{padding:16px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);position:relative;overflow:hidden}
+.clock .city{font-family:'Fraunces',serif;font-size:17px;font-variation-settings:"opsz" 24;font-weight:600}
+.clock .tz{font-size:12px;color:var(--muted);margin-bottom:8px}
+.clock .time{font-family:'Fraunces',serif;font-size:34px;font-variation-settings:"opsz" 96;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.clock .meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:var(--muted)}
+.clock .icon{font-size:18px}
+.clock .delx{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);opacity:0;transition:opacity .15s}
+.clock:hover .delx{opacity:1}
+.clock .delx:hover{background:var(--paper-2);color:var(--ink)}
+
+/* CONTACTS */
+.search{position:relative;margin-bottom:14px}
+.search input{width:100%;padding:11px 14px 11px 38px;border-radius:var(--r);border:1px solid var(--line);background:var(--paper);font-size:14px;outline:none;transition:border .15s,box-shadow .15s}
+.search input:focus{border-color:var(--ink-2);box-shadow:0 0 0 4px rgba(42,37,32,.05)}
+.search::before{content:"";position:absolute;left:13px;top:50%;width:14px;height:14px;transform:translateY(-50%);background:no-repeat center/contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239C9082' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m21 21-4.3-4.3'/></svg>")}
+.contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.contact{display:flex;gap:12px;padding:14px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);cursor:pointer;transition:transform .12s,box-shadow .15s}
+.contact:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.contact .av{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:18px;color:#fff}
+.contact .info{flex:1;min-width:0}
+.contact .nm{font-weight:600}
+.contact .role{font-size:12.5px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contact .links{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.contact .links a{font-size:12.5px;color:var(--ink-2);text-decoration:none;padding:2px 8px;background:var(--paper-2);border-radius:999px}
+.contact .links a:hover{color:var(--coral);background:var(--coral-soft)}
+.contact .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+
+/* SUB TABS (внутри Трэвела) */
+.sub-tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--paper);border-radius:999px;box-shadow:var(--shadow);border:1px solid var(--line);width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--ink-2);transition:all .15s;white-space:nowrap}
+.sub-tab:hover{color:var(--ink)}
+.sub-tab.active{background:var(--ink);color:var(--paper)}
+.sub-tab .count{background:rgba(0,0,0,.06);padding:1px 7px;border-radius:999px;font-size:11.5px;font-weight:600;color:var(--ink-2)}
+.sub-tab.active .count{background:rgba(255,255,255,.15);color:var(--paper)}
+
+/* PLACES */
+.places-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.type-filters{display:flex;gap:6px;flex-wrap:wrap}
+.type-filters button{padding:7px 12px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:13px;color:var(--ink-2);font-weight:500;transition:all .15s}
+.type-filters button:hover{color:var(--ink)}
+.type-filters button.sel{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.city-group{margin-bottom:18px}
+.city-group h3{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;font-family:'Fraunces',serif;font-size:19px;font-variation-settings:"opsz" 48}
+.city-group h3 .country{font-family:'Manrope',sans-serif;font-size:13px;color:var(--muted);font-weight:400}
+.city-group h3 .n{margin-left:auto;color:var(--muted);font-size:13px;font-weight:400}
+.places-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.place{padding:13px 14px;background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);cursor:pointer;transition:transform .12s,box-shadow .15s;display:flex;gap:11px;align-items:flex-start}
+.place:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.place .emo{flex:0 0 36px;width:36px;height:36px;border-radius:10px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-size:18px}
+.place.hotel .emo{background:#E2EAF1;color:#3E5872}
+.place.restaurant .emo{background:#FBE3DA}
+.place.cafe .emo{background:#F4E6D0}
+.place.bar .emo{background:#ECDFF0}
+.place.sight .emo{background:#DEEBDC}
+.place .info{flex:1;min-width:0}
+.place .nm{font-weight:600;line-height:1.2}
+.place .meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.place .stars{color:#E8B65A;letter-spacing:1px}
+.place .nt{font-size:13px;color:var(--ink-2);margin-top:5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* TRIPS */
+.trips{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:880px){.trips{grid-template-columns:repeat(2,1fr)}}
+.trip{background:var(--paper);border-radius:var(--r-lg);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden}
+.trip-h{padding:18px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:linear-gradient(135deg,#F8EFD9,#F4E6C8)}
+.trip-h.act{background:linear-gradient(135deg,#FBE3DA,#F4D6C5)}
+.trip-h.done{background:linear-gradient(135deg,#E8DFCB,#DBD0B6);opacity:.85}
+.trip-h .dest{font-family:'Fraunces',serif;font-size:22px;font-variation-settings:"opsz" 48;font-weight:600;line-height:1.1}
+.trip-h .country{color:var(--ink-2);font-size:13px;margin-top:2px}
+.trip-h .phase{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.6);color:var(--ink-2);font-weight:600;white-space:nowrap}
+.trip-body{padding:14px 18px 18px}
+.trip-meta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:13px}
+.trip-meta>div{display:flex;flex-direction:column}
+.trip-meta .lbl{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.trip-meta .val{font-weight:600;margin-top:1px}
+.trip-meta .val.big{font-family:'Fraunces',serif;font-size:18px;font-variation-settings:"opsz" 24}
+.section{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.section-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.section-h h4{font-family:'Fraunces',serif;font-size:15px;font-variation-settings:"opsz" 24;display:flex;align-items:center;gap:6px}
+.section-h h4 .n{color:var(--muted);font-weight:400;font-size:13px}
+.checklist{display:flex;flex-direction:column;gap:5px}
+.check{display:flex;align-items:center;gap:9px;padding:6px 8px;background:var(--bg);border-radius:8px;cursor:pointer}
+.check:hover{background:#F4ECDB}
+.check .chk{flex:0 0 16px;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--line-2);display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.check.done .chk{background:var(--sage);border-color:var(--sage);color:#fff}
+.check.done .chk::before{content:"✓";font-size:11px}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.check .txt{font-size:13px;flex:1}
+.check .x{color:var(--muted);font-size:14px;padding:2px 6px;border-radius:6px;opacity:0;transition:opacity .15s}
+.check:hover .x{opacity:1}
+.check .x:hover{background:#FCD9D6;color:#B23B3B}
+.check-add{display:flex;gap:6px;margin-top:8px}
+.check-add input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;outline:none}
+.check-add input:focus{border-color:var(--ink-2)}
+.check-add button{padding:6px 10px;border-radius:8px;background:var(--ink);color:var(--paper);font-size:12px;font-weight:600}
+.trip-places{display:flex;flex-direction:column;gap:5px}
+.tp-row{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;background:var(--bg);cursor:pointer;transition:background .15s}
+.tp-row:hover{background:#F4ECDB}
+.tp-row .e{flex:0 0 24px;text-align:center}
+.tp-row .t{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-row .y{font-size:11.5px;color:var(--muted)}
+.tp-prev{margin-top:8px;padding:9px 11px;background:linear-gradient(135deg,#EAEFE8,#DEEBDC);border-radius:10px;font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:8px;cursor:pointer;transition:transform .12s}
+.tp-prev:hover{transform:translateY(-1px)}
+.tp-prev .em{font-size:16px}
+.brief{margin-top:14px;padding:14px;background:linear-gradient(135deg,#F8F2E2,#F2E9D0);border-radius:var(--r);border:1px solid var(--line-2)}
+.brief h4{font-family:'Fraunces',serif;font-size:14px;font-variation-settings:"opsz" 24;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.brief .b-text{font-size:13px;line-height:1.55;color:var(--ink-2);white-space:pre-wrap}
+.brief .b-acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line-2);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+.scrim{position:fixed;inset:0;background:rgba(42,37,32,.32);z-index:50;display:none;align-items:flex-end;justify-content:center;animation:fade .18s ease}
+@media(min-width:640px){.scrim{align-items:center}}
+.scrim.show{display:flex}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--paper);width:100%;max-width:540px;border-radius:22px 22px 0 0;padding:22px 20px 26px;box-shadow:0 -8px 40px rgba(58,42,20,.25);max-height:90dvh;overflow-y:auto;animation:slideup .25s ease}
+@media(min-width:640px){.sheet{border-radius:22px;max-height:84dvh;animation:popin .2s ease}}
+.sheet.wide{max-width:720px}
+@keyframes slideup{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes popin{from{transform:scale(.97);opacity:0}to{transform:none;opacity:1}}
+.sheet h2{margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheet h2 .x{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:20px}
+.sheet h2 .x:hover{background:var(--paper-2);color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.field input,.field textarea,.field select{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-size:14px;outline:none;transition:border .15s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--ink-2)}
+.field textarea{resize:vertical;min-height:64px;font-family:inherit}
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.actions .left{display:flex;gap:6px}
+.actions .right{display:flex;gap:8px}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s}
+.swatch:hover{transform:scale(1.1)}
+.swatch.sel{border-color:var(--ink)}
+.seg{display:flex;background:var(--bg);border-radius:var(--r-sm);padding:3px;border:1px solid var(--line);flex-wrap:wrap}
+.seg button{flex:1;min-width:60px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-2)}
+.seg button.sel{background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.toggle .lbl{flex:1}
+.toggle .lbl .t{font-weight:500}
+.toggle .lbl .s{font-size:12px;color:var(--muted);margin-top:2px}
+.switch{position:relative;width:44px;height:26px;background:var(--line-2);border-radius:999px;transition:background .2s;flex:0 0 44px}
+.switch.on{background:var(--sage)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on::after{transform:translateX(18px)}
+.rating{display:flex;gap:3px;font-size:22px;cursor:pointer;user-select:none}
+.rating span{color:var(--line-2);transition:color .1s}
+.rating span.on{color:#E8B65A}
+
+/* GLOBAL SEARCH */
+.gs-input{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg);border-radius:var(--r);border:1px solid var(--line);margin-bottom:14px}
+.gs-input input{flex:1;background:none;border:0;outline:none;font-size:16px}
+.gs-input .ic{font-size:18px;color:var(--muted)}
+.gs-results{max-height:60dvh;overflow-y:auto;margin:0 -4px;padding:0 4px}
+.gs-group{margin-bottom:14px}
+.gs-group h4{font-family:'Manrope',sans-serif;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:6px;padding:0 4px}
+.gs-item{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;cursor:pointer;transition:background .15s}
+.gs-item:hover{background:var(--paper-2)}
+.gs-item .em{flex:0 0 28px;font-size:16px;text-align:center}
+.gs-item .body{flex:1;min-width:0}
+.gs-item .t{font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gs-item .s{font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gs-hint{padding:30px 12px;text-align:center;color:var(--muted);font-size:13px}
+.gs-hint .kbds{display:inline-flex;gap:5px;margin-top:10px}
+
+/* HELPERS */
+.hide{display:none!important}
+.kbd{font-family:'Manrope',monospace;font-size:11px;color:var(--muted);background:var(--paper-2);padding:2px 6px;border-radius:5px;border:1px solid var(--line)}
+.banner{margin-bottom:14px;padding:12px 14px;background:linear-gradient(135deg,#FBE3DA,#F4D6C5);border-radius:var(--r);border:1px solid #E8B6A0;display:flex;align-items:center;gap:10px;font-size:13.5px}
+.banner .em{font-size:20px}
+.banner .x{margin-left:auto;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.banner .x:hover{background:rgba(255,255,255,.5)}
+
+/* TOAST */
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:13px;font-weight:500;box-shadow:0 12px 32px -8px rgba(42,37,32,.4);opacity:0;pointer-events:none;transition:all .22s ease;z-index:60}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="logo">Note<span class="ai">AI</span></span>
+      <span class="tag">рабочий стол ассистента</span>
+    </div>
+    <div class="user">
+      <span class="who" id="userName"></span>
+      <button class="icon-btn" id="searchBtn" title="Поиск  (⌘K)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" id="setBtn" title="Настройки">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span class="pulse hide" id="setDot"></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-v="today"><span class="emo">☀️</span>Сегодня</button>
+    <button class="tab" data-v="tasks"><span class="emo">✦</span>Задачи<span class="count" id="cntTasks">0</span></button>
+    <button class="tab" data-v="schedule"><span class="emo">🗓</span>Расписание</button>
+    <button class="tab" data-v="bdays"><span class="emo">🎂</span>Дни рождения<span class="count" id="cntBdays">0</span></button>
+    <button class="tab" data-v="clocks"><span class="emo">🌍</span>Время</button>
+    <button class="tab" data-v="contacts"><span class="emo">📇</span>База<span class="count" id="cntContacts">0</span></button>
+    <button class="tab" data-v="trips"><span class="emo">✈️</span>Трэвел<span class="count" id="cntTrips">0</span></button>
+  </nav>
+
+  <!-- TODAY -->
+  <section class="view active" id="v-today">
+    <div class="greet">
+      <div class="hi" id="greetHi"></div>
+      <div class="date" id="greetDate"></div>
+    </div>
+    <div id="notifBanner"></div>
+    <div class="today-grid">
+      <div class="card span2">
+        <div class="card-h"><h3><span class="emo">🎯</span>Фокус дня</h3><button class="btn ghost sm" data-go="tasks">все задачи →</button></div>
+        <div id="todayFocus"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3><span class="emo">🗓</span>Сегодня в расписании</h3><button class="btn ghost sm" data-go="schedule">расписание →</button></div>
+        <div id="todayEvents"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3><span class="emo">🎂</span>Скоро дни рождения</h3><button class="btn ghost sm" data-go="bdays">все →</button></div>
+        <div id="todayBdays"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3><span class="emo">🌍</span>Часы мира</h3><button class="btn ghost sm" data-go="clocks">все часы →</button></div>
+        <div id="todayClocks"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3><span class="emo">✈️</span>Ближайшая поездка</h3><button class="btn ghost sm" data-go="trips">все поездки →</button></div>
+        <div id="todayTrip"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section class="view" id="v-tasks">
+    <div class="matrix" id="matrix"></div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section class="view" id="v-schedule">
+    <div class="day-nav">
+      <button class="btn icon" id="dayPrev" aria-label="назад">‹</button>
+      <div class="center"><div class="ttl" id="dayTtl"></div><div class="sub" id="daySub"></div></div>
+      <button class="btn icon" id="dayNext" aria-label="вперёд">›</button>
+    </div>
+    <div style="text-align:center;margin-bottom:14px"><button class="btn sm" id="dayToday">сегодня</button></div>
+    <div class="events" id="eventsList"></div>
+  </section>
+
+  <!-- BDAYS -->
+  <section class="view" id="v-bdays">
+    <div id="bdaysList" class="bday-list"></div>
+  </section>
+
+  <!-- CLOCKS -->
+  <section class="view" id="v-clocks">
+    <div id="clocksList" class="clocks"></div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section class="view" id="v-contacts">
+    <div class="search"><input id="contactSearch" type="search" placeholder="Поиск по имени, телефону, тегу, заметке…" autocomplete="off"></div>
+    <div id="contactsList" class="contacts-grid"></div>
+  </section>
+
+  <!-- TRIPS + PLACES -->
+  <section class="view" id="v-trips">
+    <div class="sub-tabs" id="travelSub">
+      <button class="sub-tab active" data-sub="trips">✈️ Поездки <span class="count" id="cntTrips2">0</span></button>
+      <button class="sub-tab" data-sub="places">📍 База мест <span class="count" id="cntPlaces">0</span></button>
+    </div>
+    <div id="trav-trips">
+      <div id="tripsList" class="trips"></div>
+    </div>
+    <div id="trav-places" class="hide">
+      <div class="search"><input id="placeSearch" type="search" placeholder="Поиск по названию, городу, заметке…" autocomplete="off"></div>
+      <div class="places-toolbar"><div class="type-filters" id="placeFilters"></div></div>
+      <div id="placesList"></div>
+    </div>
+  </section>
+
+  <button class="add-btn hide" id="addBtn" title="Добавить">+</button>
+</div>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   NoteAI — рабочий стол ассистента
+   ============================================================ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const uid=()=>Math.random().toString(36).slice(2,10);
+const pad=n=>String(n).padStart(2,'0');
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const RU={months:['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'],
+  monthsGen:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'],
+  days:['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота']};
+const fmtDate=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-').map(Number);return `${d} ${RU.monthsGen[m-1]} ${y}`};
+const fmtDateShort=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-').map(Number);return `${d} ${RU.monthsGen[m-1]}`};
+const fmtDOW=iso=>{const[y,m,d]=iso.split('-').map(Number);return RU.days[new Date(y,m-1,d).getDay()]};
+const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
+const plural=(n,one,few,many)=>{const m=Math.abs(n)%100,m1=m%10;if(m>10&&m<20)return many;if(m1>1&&m1<5)return few;if(m1===1)return one;return many};
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SP='noteai.';
+
+/* STORAGE + миграция со старого префикса 'orbita.' */
+const Store={
+  get(k,f){try{const v=localStorage.getItem(SP+k);return v?JSON.parse(v):f}catch(e){return f}},
+  set(k,v){try{localStorage.setItem(SP+k,JSON.stringify(v))}catch(e){toast('Не удалось сохранить')}}
+};
+(function migrate(){
+  ['settings','tasks','events','bdays','clocks','contacts','trips','ai','places','notif'].forEach(k=>{
+    if(localStorage.getItem(SP+k)!==null)return;
+    const old=localStorage.getItem('orbita.'+k);
+    if(old!==null)localStorage.setItem(SP+k,old);
+  });
+})();
+
+/* DEFAULTS */
+const DEF_CLOCKS=[
+  {id:uid(),label:'Астана',tz:'Asia/Almaty'},
+  {id:uid(),label:'Москва',tz:'Europe/Moscow'},
+  {id:uid(),label:'Лондон',tz:'Europe/London'},
+  {id:uid(),label:'Нью-Йорк',tz:'America/New_York'},
+];
+const TZ_LIST=[
+  ['Asia/Almaty','Алматы / Астана'],['Asia/Aqtobe','Актобе'],['Asia/Atyrau','Атырау'],['Europe/Moscow','Москва'],['Europe/Saint_Petersburg','Санкт-Петербург'],
+  ['Europe/Kyiv','Киев'],['Europe/Minsk','Минск'],['Europe/London','Лондон'],['Europe/Paris','Париж'],['Europe/Berlin','Берлин'],['Europe/Madrid','Мадрид'],
+  ['Europe/Rome','Рим'],['Europe/Amsterdam','Амстердам'],['Europe/Istanbul','Стамбул'],['Europe/Athens','Афины'],['Europe/Lisbon','Лиссабон'],
+  ['Asia/Dubai','Дубай'],['Asia/Tbilisi','Тбилиси'],['Asia/Yerevan','Ереван'],['Asia/Baku','Баку'],['Asia/Tashkent','Ташкент'],['Asia/Bishkek','Бишкек'],
+  ['Asia/Tokyo','Токио'],['Asia/Seoul','Сеул'],['Asia/Shanghai','Шанхай'],['Asia/Hong_Kong','Гонконг'],['Asia/Singapore','Сингапур'],['Asia/Bangkok','Бангкок'],
+  ['Asia/Kuala_Lumpur','Куала-Лумпур'],['Asia/Jakarta','Джакарта'],['Asia/Kolkata','Дели / Мумбаи'],
+  ['America/New_York','Нью-Йорк'],['America/Chicago','Чикаго'],['America/Denver','Денвер'],['America/Los_Angeles','Лос-Анджелес'],
+  ['America/Toronto','Торонто'],['America/Sao_Paulo','Сан-Паулу'],['America/Mexico_City','Мехико'],
+  ['Australia/Sydney','Сидней'],['Australia/Melbourne','Мельбурн'],['Pacific/Auckland','Окленд']
+];
+const AV_COLORS=['#E07A5F','#81A684','#E8B65A','#B395BD','#7AA5C7','#D17074','#9C8FB7','#6F9286'];
+const EVT_COLORS=['#E07A5F','#81A684','#E8B65A','#B395BD','#7AA5C7','#D17074'];
+const QUADS={
+  ui:{title:'Срочно и важно',sub:'делать сразу',color:'coral'},
+  iu:{title:'Важно, не срочно',sub:'запланировать',color:'sage'},
+  un:{title:'Срочно, не важно',sub:'делегировать',color:'amber'},
+  nn:{title:'Не важно, не срочно',sub:'минимизировать',color:'lilac'},
+};
+const PLACE_TYPES={
+  hotel:{e:'🏨',l:'отель'},
+  restaurant:{e:'🍽',l:'ресторан'},
+  cafe:{e:'☕',l:'кафе'},
+  bar:{e:'🍷',l:'бар'},
+  sight:{e:'🎯',l:'место'},
+  other:{e:'📍',l:'другое'},
+};
+
+/* STATE */
+const State={
+  settings:Store.get('settings',{name:''}),
+  tasks:Store.get('tasks',[]),
+  events:Store.get('events',[]),
+  bdays:Store.get('bdays',[]),
+  clocks:Store.get('clocks',DEF_CLOCKS),
+  contacts:Store.get('contacts',[]),
+  trips:Store.get('trips',[]),
+  places:Store.get('places',[]),
+  ai:Store.get('ai',{key:''}),
+  notif:Store.get('notif',{enabled:false,time:'08:30',lastDate:''}),
+  view:'today',
+  travelSub:'trips',
+  scheduleDate:todayISO(),
+  contactQuery:'',
+  placeQuery:'',
+  placeFilter:'all',
+};
+function save(k){Store.set(k,State[k])}
+
+/* TOAST */
+let toastT;
+function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200)}
+
+/* GREETING */
+function greet(){
+  const h=new Date().getHours();
+  if(h<5)return'Тихой ночи';
+  if(h<12)return'Доброе утро';
+  if(h<18)return'Добрый день';
+  return'Добрый вечер';
+}
+function renderGreet(){
+  const name=State.settings.name||'';
+  const nameHTML=name?`, <span class="name">${esc(name)}</span>`:'';
+  $('#greetHi').innerHTML=`${greet()}${nameHTML}`;
+  const d=new Date();
+  $('#greetDate').textContent=`сегодня — ${RU.days[d.getDay()]}, ${d.getDate()} ${RU.monthsGen[d.getMonth()]} ${d.getFullYear()}`;
+  $('#userName').textContent=name||'';
+}
+
+/* ============================================================
+   TASKS
+   ============================================================ */
+function nextRepeat(iso,rep){
+  if(!iso||rep==='none'||!rep)return null;
+  const[y,m,d]=iso.split('-').map(Number);
+  const dt=new Date(y,m-1,d);
+  if(rep==='day')dt.setDate(dt.getDate()+1);
+  else if(rep==='week')dt.setDate(dt.getDate()+7);
+  else if(rep==='month')dt.setMonth(dt.getMonth()+1);
+  return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+}
+function toggleTask(id){
+  const t=State.tasks.find(x=>x.id===id);if(!t)return;
+  if(!t.done&&t.rep&&t.rep!=='none'&&t.due){
+    t.due=nextRepeat(t.due,t.rep);
+  }else{
+    t.done=!t.done;
+  }
+  save('tasks');renderAll();
+}
+function addTask(quad,text){
+  text=text.trim();if(!text)return;
+  State.tasks.push({id:uid(),text,quad,done:false,due:'',rep:'none'});
+  save('tasks');renderAll();
+}
+function renderMatrix(){
+  const root=$('#matrix');root.innerHTML='';
+  for(const q of ['ui','iu','un','nn']){
+    const meta=QUADS[q];
+    const list=State.tasks.filter(t=>t.quad===q);
+    const open=list.filter(t=>!t.done).length;
+    const div=document.createElement('div');
+    div.className='quad '+q;
+    div.innerHTML=`
+      <div class="quad-h">
+        <div>
+          <div class="ttl">${meta.title}</div>
+          <div class="sub">${meta.sub}</div>
+        </div>
+        <span class="n">${open}</span>
+      </div>
+      <form class="add" data-q="${q}">
+        <input type="text" placeholder="Новая задача…" maxlength="180">
+        <button type="submit">+</button>
+      </form>
+      <div class="tasklist">
+        ${list.length?list.map(t=>taskRow(t)).join(''):`<div class="empty" style="padding:16px 8px">пусто — добавь сверху ↑</div>`}
+      </div>`;
+    root.appendChild(div);
+  }
+  $$('#matrix form.add').forEach(f=>{
+    f.addEventListener('submit',e=>{e.preventDefault();const i=f.querySelector('input');addTask(f.dataset.q,i.value);i.value=''});
+  });
+  bindTaskRows(root);
+}
+function taskRow(t){
+  const cls=['task'];if(t.done)cls.push('done');
+  const meta=[];
+  if(t.due){
+    const d=daysBetween(todayISO(),t.due);
+    if(!t.done&&d<0)meta.push(`<span class="chip late">просрочено · ${fmtDateShort(t.due)}</span>`);
+    else if(!t.done&&d===0)meta.push(`<span class="chip today">сегодня</span>`);
+    else if(!t.done&&d<=3)meta.push(`<span class="chip soon">через ${d} ${plural(d,'день','дня','дней')}</span>`);
+    else meta.push(`<span class="chip">${fmtDateShort(t.due)}</span>`);
+  }
+  if(t.rep&&t.rep!=='none'){
+    const map={day:'каждый день',week:'каждую неделю',month:'каждый месяц'};
+    meta.push(`<span class="chip">↻ ${map[t.rep]}</span>`);
+  }
+  return `<div class="${cls.join(' ')}" data-id="${t.id}">
+    <span class="chk" data-act="chk"></span>
+    <div class="body">
+      <div class="txt">${esc(t.text)}</div>
+      ${meta.length?`<div class="meta">${meta.join('')}</div>`:''}
+    </div>
+    <div class="acts">
+      <button data-act="edit" title="Изменить">✎</button>
+      <button data-act="del" title="Удалить">×</button>
+    </div>
+  </div>`;
+}
+function bindTaskRows(root){
+  $$('.task',root).forEach(row=>{
+    const id=row.dataset.id;
+    row.addEventListener('click',e=>{
+      const a=e.target.closest('[data-act]');if(!a)return;
+      if(a.dataset.act==='chk')toggleTask(id);
+      else if(a.dataset.act==='edit')openTaskModal(id);
+      else if(a.dataset.act==='del'){
+        if(confirm('Удалить задачу?')){State.tasks=State.tasks.filter(x=>x.id!==id);save('tasks');renderAll()}
+      }
+    });
+  });
+}
+
+/* ============================================================
+   SCHEDULE
+   ============================================================ */
+function renderSchedule(){
+  const iso=State.scheduleDate;
+  $('#dayTtl').textContent=fmtDate(iso);
+  $('#daySub').textContent=fmtDOW(iso);
+  const list=State.events.filter(e=>e.date===iso).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+  const root=$('#eventsList');
+  if(!list.length){
+    root.innerHTML=`<div class="empty"><span class="big">🗓</span>в этот день пока ничего нет<br><span class="subtle">нажми + чтобы добавить событие</span></div>`;
+    return;
+  }
+  root.innerHTML=list.map(ev=>`
+    <div class="event" data-id="${ev.id}" style="border-left-color:${ev.color||'#E07A5F'}">
+      <div class="time">${esc(ev.start||'')}${ev.end?`<span class="end">до ${esc(ev.end)}</span>`:''}</div>
+      <div class="info"><div class="t">${esc(ev.title)}</div>${ev.note?`<div class="n">${esc(ev.note)}</div>`:''}</div>
+    </div>`).join('');
+  $$('.event',root).forEach(el=>el.addEventListener('click',()=>openEventModal(el.dataset.id)));
+}
+function shiftDay(n){
+  const[y,m,d]=State.scheduleDate.split('-').map(Number);
+  const dt=new Date(y,m-1,d);dt.setDate(dt.getDate()+n);
+  State.scheduleDate=`${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+  renderSchedule();
+}
+
+/* ============================================================
+   BDAYS
+   ============================================================ */
+function nextBday(day,month){
+  const now=new Date();const y=now.getFullYear();
+  let dt=new Date(y,month-1,day);
+  const today=new Date(y,now.getMonth(),now.getDate());
+  if(dt<today)dt=new Date(y+1,month-1,day);
+  return dt;
+}
+function renderBdays(){
+  const root=$('#bdaysList');
+  if(!State.bdays.length){
+    root.innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="big">🎂</span>добавь даты, чтобы не забыть поздравить<br><span class="subtle">нажми + внизу</span></div>`;
+    return;
+  }
+  const arr=State.bdays.map(b=>({...b,next:nextBday(b.day,b.month)})).sort((a,b)=>a.next-b.next);
+  root.innerHTML=arr.map(b=>{
+    const days=daysBetween(todayISO(),`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`);
+    let cls='bday';let label='';
+    if(days===0){cls+=' today';label='сегодня 🎂'}
+    else if(days<=7){cls+=' soon';label=`через ${days} ${plural(days,'день','дня','дней')}`}
+    else label=`через ${days} ${plural(days,'день','дня','дней')}`;
+    const age=b.year?`, исполнится ${b.next.getFullYear()-b.year}`:'';
+    const initial=(b.name||'?').trim()[0]||'?';
+    return `<div class="${cls}" data-id="${b.id}">
+      <div class="av">${esc(initial.toUpperCase())}</div>
+      <div class="info">
+        <div class="nm">${esc(b.name)}</div>
+        <div class="dt"><span>${b.day} ${RU.monthsGen[b.month-1]}${age}</span><span class="chip ${days===0?'today':(days<=7?'soon':'')}">${label}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  $$('.bday',root).forEach(el=>el.addEventListener('click',()=>openBdayModal(el.dataset.id)));
+}
+
+/* ============================================================
+   CLOCKS
+   ============================================================ */
+function tzOffsetHours(tz,date=new Date()){
+  const dtf=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const p=Object.fromEntries(dtf.formatToParts(date).map(x=>[x.type,x.value]));
+  const asUTC=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour===24?0:+p.hour,+p.minute,+p.second);
+  return (asUTC-date.getTime())/3600000;
+}
+function tzTime(tz){
+  const d=new Date();
+  return new Intl.DateTimeFormat('ru-RU',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d);
+}
+function tzHour(tz){
+  const d=new Date();
+  return +new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',hour12:false}).format(d);
+}
+function timeIcon(h){if(h<5||h>=22)return'🌙';if(h<8)return'🌅';if(h<18)return'☀️';if(h<21)return'🌇';return'🌙'}
+function renderClocks(){
+  const root=$('#clocksList');
+  const local=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if(!State.clocks.length){
+    root.innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="big">🌍</span>добавь нужные города<br><span class="subtle">кнопка + внизу</span></div>`;return;
+  }
+  root.innerHTML=State.clocks.map(c=>{
+    const off=tzOffsetHours(c.tz)-tzOffsetHours(local);
+    const h=tzHour(c.tz);
+    const sign=off>0?'+':'';
+    return `<div class="clock" data-id="${c.id}">
+      <button class="delx" data-del title="Удалить">×</button>
+      <div class="city">${esc(c.label)}</div>
+      <div class="tz">${esc(c.tz)}</div>
+      <div class="time" data-tz="${c.tz}">${tzTime(c.tz)}</div>
+      <div class="meta"><span>${off===0?'твоё время':sign+off+' ч'}</span><span class="icon">${timeIcon(h)}</span></div>
+    </div>`;
+  }).join('');
+  $$('.clock .delx',root).forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();const id=e.target.closest('.clock').dataset.id;
+    State.clocks=State.clocks.filter(c=>c.id!==id);save('clocks');renderClocks();
+  }));
+}
+function tickClocks(){
+  $$('#clocksList .time, .clock-mini .t').forEach(el=>{
+    const tz=el.dataset.tz;if(!tz)return;
+    el.textContent=tzTime(tz);
+  });
+}
+
+/* ============================================================
+   CONTACTS
+   ============================================================ */
+function avColor(name){let h=0;for(const c of(name||'?'))h=(h*31+c.charCodeAt(0))%AV_COLORS.length;return AV_COLORS[h]}
+function renderContacts(){
+  const q=State.contactQuery.trim().toLowerCase();
+  const list=State.contacts.filter(c=>{
+    if(!q)return true;
+    return [c.name,c.role,c.phone,c.email,c.note,(c.tags||[]).join(' ')].join(' ').toLowerCase().includes(q);
+  });
+  const root=$('#contactsList');
+  if(!State.contacts.length){
+    root.innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="big">📇</span>здесь будет твоя база контактов<br><span class="subtle">нажми + чтобы добавить первого</span></div>`;return;
+  }
+  if(!list.length){root.innerHTML=`<div class="empty" style="grid-column:1/-1">никого не нашлось</div>`;return}
+  root.innerHTML=list.sort((a,b)=>(a.name||'').localeCompare(b.name||'','ru')).map(c=>{
+    const initial=(c.name||'?').trim()[0]||'?';
+    return `<div class="contact" data-id="${c.id}">
+      <div class="av" style="background:${avColor(c.name)}">${esc(initial.toUpperCase())}</div>
+      <div class="info">
+        <div class="nm">${esc(c.name)}</div>
+        ${c.role?`<div class="role">${esc(c.role)}</div>`:''}
+        <div class="links">
+          ${c.phone?`<a href="tel:${esc(c.phone)}" onclick="event.stopPropagation()">📞 ${esc(c.phone)}</a>`:''}
+          ${c.email?`<a href="mailto:${esc(c.email)}" onclick="event.stopPropagation()">✉ ${esc(c.email)}</a>`:''}
+        </div>
+        ${(c.tags||[]).length?`<div class="tags">${c.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  $$('.contact',root).forEach(el=>el.addEventListener('click',()=>openContactModal(el.dataset.id)));
+}
+
+/* ============================================================
+   PLACES — кафе / рестораны / отели по городам
+   ============================================================ */
+function placesByTrip(tripId){return State.places.filter(p=>p.tripId===tripId)}
+function placesByCity(city,country){
+  const c=(city||'').toLowerCase().trim();
+  const co=(country||'').toLowerCase().trim();
+  return State.places.filter(p=>(p.city||'').toLowerCase().trim()===c&&(!co||(p.country||'').toLowerCase().trim()===co));
+}
+function tripByPlace(p){return p.tripId?State.trips.find(t=>t.id===p.tripId):null}
+function renderPlaceFilters(){
+  const root=$('#placeFilters');
+  const items=[['all','все',null],...Object.entries(PLACE_TYPES).map(([k,v])=>[k,v.l,v.e])];
+  root.innerHTML=items.map(([k,l,e])=>{
+    const cnt=k==='all'?State.places.length:State.places.filter(p=>p.type===k).length;
+    return `<button data-f="${k}" class="${State.placeFilter===k?'sel':''}">${e?e+' ':''}${l}${cnt?` · ${cnt}`:''}</button>`;
+  }).join('');
+  $$('button',root).forEach(b=>b.addEventListener('click',()=>{State.placeFilter=b.dataset.f;renderPlaces()}));
+}
+function placeMatches(p,q){
+  if(!q)return true;
+  return [p.name,p.city,p.country,p.address,p.note].join(' ').toLowerCase().includes(q);
+}
+function placeRow(p){
+  const tp=PLACE_TYPES[p.type]||PLACE_TYPES.other;
+  const trip=tripByPlace(p);
+  const rating=p.rating?'★'.repeat(p.rating):'';
+  const date=p.visitedDate?fmtDateShort(p.visitedDate):'';
+  const meta=[tp.l,date,trip?`из поездки «${trip.dest}»`:''].filter(Boolean).join(' · ');
+  return `<div class="place ${p.type}" data-id="${p.id}">
+    <div class="emo">${tp.e}</div>
+    <div class="info">
+      <div class="nm">${esc(p.name)}${rating?` <span class="stars">${rating}</span>`:''}</div>
+      <div class="meta">${esc(meta)}</div>
+      ${p.note?`<div class="nt">${esc(p.note)}</div>`:''}
+    </div>
+  </div>`;
+}
+function renderPlaces(){
+  renderPlaceFilters();
+  const root=$('#placesList');
+  if(!State.places.length){
+    root.innerHTML=`<div class="empty"><span class="big">📍</span>тут будет твоя база мест<br><span class="subtle">отели, рестораны, кафе по городам</span><br><span class="subtle">добавляй прямо из поездки или нажми + внизу</span></div>`;return;
+  }
+  const q=State.placeQuery.trim().toLowerCase();
+  let arr=State.places.filter(p=>placeMatches(p,q));
+  if(State.placeFilter!=='all')arr=arr.filter(p=>p.type===State.placeFilter);
+  if(!arr.length){root.innerHTML=`<div class="empty">ничего не нашлось</div>`;return}
+  const byCity=new Map();
+  for(const p of arr){
+    const k=`${(p.city||'').trim()}__${(p.country||'').trim()}`;
+    if(!byCity.has(k))byCity.set(k,{city:p.city||'без города',country:p.country||'',items:[]});
+    byCity.get(k).items.push(p);
+  }
+  const groups=[...byCity.values()].sort((a,b)=>a.city.localeCompare(b.city,'ru'));
+  root.innerHTML=groups.map(g=>`
+    <div class="city-group">
+      <h3>${esc(g.city)}<span class="country">${esc(g.country||'')}</span><span class="n">${g.items.length} ${plural(g.items.length,'место','места','мест')}</span></h3>
+      <div class="places-grid">${g.items.sort((a,b)=>(b.visitedDate||'').localeCompare(a.visitedDate||'')).map(placeRow).join('')}</div>
+    </div>`).join('');
+  $$('.place',root).forEach(el=>el.addEventListener('click',()=>openPlaceModal(el.dataset.id)));
+}
+
+/* ============================================================
+   TRIPS
+   ============================================================ */
+function tripPhase(t){
+  const t0=todayISO();
+  if(t.start>t0)return{p:'soon',label:'предстоит'};
+  if(t.end&&t.end<t0)return{p:'done',label:'завершена'};
+  return{p:'act',label:'в поездке'};
+}
+function renderTrips(){
+  const root=$('#tripsList');
+  if(!State.trips.length){
+    root.innerHTML=`<div class="empty" style="grid-column:1/-1"><span class="big">✈️</span>пока поездок нет<br><span class="subtle">нажми + чтобы добавить</span></div>`;return;
+  }
+  const arr=[...State.trips].sort((a,b)=>{
+    const pa=tripPhase(a).p,pb=tripPhase(b).p;
+    const ord={act:0,soon:1,done:2};
+    if(ord[pa]!==ord[pb])return ord[pa]-ord[pb];
+    return (a.start||'').localeCompare(b.start||'');
+  });
+  root.innerHTML=arr.map(t=>{
+    const ph=tripPhase(t);
+    const d=daysBetween(todayISO(),t.start);
+    let cd='';
+    if(ph.p==='soon')cd=`через ${d} ${plural(d,'день','дня','дней')}`;
+    else if(ph.p==='act'){const r=t.end?daysBetween(todayISO(),t.end):0;cd=t.end?`до конца ${r} ${plural(r,'день','дня','дней')}`:'идёт сейчас'}
+    else cd='позади';
+    const local=t.tz?tzTime(t.tz):'';
+    const checks=(t.checklist||[]);
+    const done=checks.filter(x=>x.done).length;
+    // PLACES in trip
+    const tripPlaces=placesByTrip(t.id);
+    // PLACES already in same city from other trips
+    const cityPlaces=placesByCity(t.dest,t.country).filter(p=>p.tripId!==t.id);
+    return `<div class="trip" data-id="${t.id}">
+      <div class="trip-h ${ph.p}">
+        <div>
+          <div class="dest">${esc(t.dest||'')}</div>
+          <div class="country">${esc(t.country||'')}${t.purpose?` · ${esc(t.purpose)}`:''}</div>
+        </div>
+        <div class="phase">${ph.label}</div>
+      </div>
+      <div class="trip-body">
+        <div class="trip-meta">
+          <div><span class="lbl">даты</span><span class="val">${fmtDateShort(t.start)}${t.end?' — '+fmtDateShort(t.end):''}</span></div>
+          <div><span class="lbl">отсчёт</span><span class="val big">${cd}</span></div>
+          ${t.tz?`<div><span class="lbl">местное время</span><span class="val big clock-mini"><span class="t" data-tz="${t.tz}">${local}</span></span></div>`:''}
+        </div>
+        ${t.note?`<div class="subtle" style="margin-bottom:10px">${esc(t.note)}</div>`:''}
+        <div class="section">
+          <div class="section-h"><h4>📋 Чек-лист <span class="n">${done}/${checks.length}</span></h4></div>
+          <div class="checklist">
+            ${checks.map((c,i)=>`<div class="check ${c.done?'done':''}" data-i="${i}"><span class="chk"></span><span class="txt">${esc(c.text)}</span><button class="x" data-rem>×</button></div>`).join('')}
+          </div>
+          <form class="check-add"><input placeholder="добавить пункт…" maxlength="80"><button type="submit">+</button></form>
+        </div>
+        <div class="section">
+          <div class="section-h"><h4>📍 Места <span class="n">${tripPlaces.length}</span></h4><button class="btn ghost sm" data-add-place>+ добавить</button></div>
+          ${tripPlaces.length?`<div class="trip-places">${tripPlaces.map(p=>{
+            const tp=PLACE_TYPES[p.type]||PLACE_TYPES.other;
+            const stars=p.rating?' '+'★'.repeat(p.rating):'';
+            return `<div class="tp-row" data-p="${p.id}"><span class="e">${tp.e}</span><span class="t">${esc(p.name)}${stars}</span><span class="y">${tp.l}</span></div>`;
+          }).join('')}</div>`:'<div class="subtle" style="font-size:12.5px">отель, рестораны, кафе, куда сходили — сохрани, чтобы в следующий раз помнить</div>'}
+          ${cityPlaces.length?`<div class="tp-prev" data-city="${esc(t.dest||'')}"><span class="em">💡</span>уже был${cityPlaces.length===1?'о':'и'} ${cityPlaces.length} ${plural(cityPlaces.length,'место','места','мест')} в ${esc(t.dest||'')} — посмотреть</div>`:''}
+        </div>
+        <div class="brief">
+          <h4>✨ AI-справка по направлению</h4>
+          ${t.briefing?`<div class="b-text">${esc(t.briefing)}</div>`:`<div class="subtle">валюта, виза для РК, розетки, погода, этикет, фразы — одним запросом.</div>`}
+          <div class="b-acts">
+            <button class="btn sm" data-brief>${t.briefing?'обновить':'получить'}</button>
+            <button class="btn ghost sm" data-edit>изменить поездку</button>
+            <button class="btn ghost sm danger" data-del>удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  $$('.trip',root).forEach(tr=>{
+    const id=tr.dataset.id;
+    $$('.check',tr).forEach(c=>{
+      c.addEventListener('click',e=>{
+        if(e.target.matches('[data-rem]')){
+          e.stopPropagation();
+          const t=State.trips.find(x=>x.id===id);t.checklist.splice(+c.dataset.i,1);save('trips');renderTrips();return;
+        }
+        const t=State.trips.find(x=>x.id===id);t.checklist[+c.dataset.i].done=!t.checklist[+c.dataset.i].done;save('trips');renderTrips();
+      });
+    });
+    tr.querySelector('.check-add').addEventListener('submit',e=>{
+      e.preventDefault();const inp=e.target.querySelector('input');const v=inp.value.trim();if(!v)return;
+      const t=State.trips.find(x=>x.id===id);t.checklist=t.checklist||[];t.checklist.push({text:v,done:false});save('trips');renderTrips();
+    });
+    tr.querySelector('[data-brief]').addEventListener('click',()=>fetchBriefing(id));
+    tr.querySelector('[data-edit]').addEventListener('click',()=>openTripModal(id));
+    tr.querySelector('[data-del]').addEventListener('click',()=>{
+      if(confirm('Удалить поездку?')){State.trips=State.trips.filter(x=>x.id!==id);save('trips');renderAll()}
+    });
+    tr.querySelector('[data-add-place]').addEventListener('click',()=>openPlaceModal(null,id));
+    $$('.tp-row',tr).forEach(r=>r.addEventListener('click',()=>openPlaceModal(r.dataset.p)));
+    const prev=tr.querySelector('.tp-prev');
+    if(prev)prev.addEventListener('click',()=>{
+      State.placeQuery=prev.dataset.city;State.placeFilter='all';
+      $('#placeSearch').value=prev.dataset.city;
+      switchTravelSub('places');renderPlaces();
+    });
+  });
+}
+
+async function fetchBriefing(id){
+  const t=State.trips.find(x=>x.id===id);if(!t)return;
+  if(!State.ai.key){
+    openApiKeyModal(()=>fetchBriefing(id));return;
+  }
+  const card=$(`.trip[data-id="${id}"] .brief`);
+  if(!card)return;
+  const btn=card.querySelector('[data-brief]');
+  btn.innerHTML='<span class="spinner"></span> готовлю…';btn.disabled=true;
+  const prompt=`Подготовь деловую справку для персонального ассистента из Казахстана о поездке в ${t.dest||''}${t.country?', '+t.country:''}${t.start?' (даты: '+fmtDateShort(t.start)+(t.end?' — '+fmtDateShort(t.end):'')+')':''}${t.purpose?', цель — '+t.purpose:''}.
+
+Структурируй компактно, по пунктам, без воды. Пункты:
+• Валюта и курс к тенге (KZT), примерно.
+• Виза для граждан Казахстана: нужна / безвизовый въезд / при пересечении.
+• Розетки (тип).
+• Погода в это время года.
+• Деловой этикет — 2-3 ключевых факта.
+• Полезные фразы — 3-4 на местном языке с произношением.
+
+Отвечай по-русски. Без вступлений и заключений, сразу по делу.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'x-api-key':State.ai.key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:900,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!r.ok){
+      const er=await r.text();
+      throw new Error(`${r.status}: ${er.slice(0,200)}`);
+    }
+    const j=await r.json();
+    const text=(j.content||[]).map(b=>b.text||'').join('').trim();
+    t.briefing=text||'(пустой ответ)';
+    save('trips');renderTrips();toast('справка готова');
+  }catch(e){
+    btn.disabled=false;btn.textContent=t.briefing?'обновить':'получить';
+    toast('Не получилось: '+(e.message||'ошибка сети'));
+  }
+}
+
+/* ============================================================
+   TODAY
+   ============================================================ */
+function renderToday(){
+  const focus=State.tasks.filter(t=>!t.done&&t.quad==='ui').slice(0,6);
+  const longSoon=State.tasks.filter(t=>!t.done&&t.quad==='iu'&&t.due&&daysBetween(todayISO(),t.due)<=3&&daysBetween(todayISO(),t.due)>=0).slice(0,3);
+  const all=[...focus,...longSoon];
+  const focusRoot=$('#todayFocus');
+  if(!all.length){
+    focusRoot.innerHTML=`<div class="empty" style="padding:18px 8px"><span class="big">🌿</span>сегодня без срочного — самое время заняться важным</div>`;
+  }else{
+    focusRoot.innerHTML=`<div class="tasklist">${all.map(t=>taskRow(t)).join('')}</div>`;
+    bindTaskRows(focusRoot);
+  }
+  const t0=todayISO();
+  const evs=State.events.filter(e=>e.date===t0).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+  const evRoot=$('#todayEvents');
+  if(!evs.length){evRoot.innerHTML=`<div class="empty" style="padding:16px 4px">встреч нет — день твой</div>`}
+  else{evRoot.innerHTML=evs.slice(0,5).map(e=>`<div class="event" style="border-left-color:${e.color||'#E07A5F'};margin-bottom:6px"><div class="time">${esc(e.start||'')}${e.end?`<span class="end">до ${esc(e.end)}</span>`:''}</div><div class="info"><div class="t">${esc(e.title)}</div>${e.note?`<div class="n">${esc(e.note)}</div>`:''}</div></div>`).join('')}
+  const bdRoot=$('#todayBdays');
+  if(!State.bdays.length){bdRoot.innerHTML=`<div class="empty" style="padding:16px 4px">пока никого — добавь близких</div>`}
+  else{
+    const soon=State.bdays.map(b=>({...b,next:nextBday(b.day,b.month)})).sort((a,b)=>a.next-b.next)
+      .filter(b=>daysBetween(todayISO(),`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`)<=30).slice(0,5);
+    if(!soon.length)bdRoot.innerHTML=`<div class="empty" style="padding:16px 4px">в ближайший месяц никого</div>`;
+    else bdRoot.innerHTML=soon.map(b=>{
+      const days=daysBetween(todayISO(),`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`);
+      const lbl=days===0?'сегодня 🎂':`через ${days} ${plural(days,'дн.','дн.','дн.')}`;
+      const cls=days===0?'today':(days<=7?'soon':'');
+      return `<div class="bday ${cls}" style="margin-bottom:6px"><div class="av">${esc((b.name||'?')[0].toUpperCase())}</div><div class="info"><div class="nm">${esc(b.name)}</div><div class="dt"><span>${b.day} ${RU.monthsGen[b.month-1]}</span><span class="chip ${cls}">${lbl}</span></div></div></div>`;
+    }).join('');
+  }
+  const clRoot=$('#todayClocks');
+  if(!State.clocks.length){clRoot.innerHTML=`<div class="empty" style="padding:16px 4px">добавь нужные пояса</div>`}
+  else{
+    const items=State.clocks.slice(0,3);
+    clRoot.innerHTML=items.map((c,i)=>{
+      const last=i===items.length-1;
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;${last?'':'border-bottom:1px solid var(--line)'}" class="clock-mini">
+        <div><div style="font-weight:600">${esc(c.label)}</div><div class="subtle" style="font-size:11.5px">${esc(c.tz)}</div></div>
+        <div style="font-family:'Fraunces',serif;font-size:22px;font-variant-numeric:tabular-nums" class="t" data-tz="${c.tz}">${tzTime(c.tz)}</div>
+      </div>`;
+    }).join('');
+  }
+  const trRoot=$('#todayTrip');
+  const upcoming=[...State.trips].filter(t=>!t.end||t.end>=todayISO()).sort((a,b)=>(a.start||'').localeCompare(b.start||''))[0];
+  if(!upcoming){trRoot.innerHTML=`<div class="empty" style="padding:16px 4px">впереди — никаких поездок</div>`}
+  else{
+    const ph=tripPhase(upcoming);
+    const d=daysBetween(todayISO(),upcoming.start);
+    let cd=ph.p==='soon'?`через ${d} ${plural(d,'день','дня','дней')}`:(ph.p==='act'?(upcoming.end?`в поездке, ещё ${daysBetween(todayISO(),upcoming.end)} ${plural(daysBetween(todayISO(),upcoming.end),'день','дня','дней')}`:'в поездке'):'');
+    trRoot.innerHTML=`<div style="font-family:'Fraunces',serif;font-size:24px;font-variation-settings:'opsz' 48;font-weight:600">${esc(upcoming.dest||'')}</div>
+      <div class="subtle" style="margin-top:2px">${esc(upcoming.country||'')}</div>
+      <div style="margin-top:10px;font-family:'Fraunces',serif;font-size:20px;font-variation-settings:'opsz' 24">${cd}</div>
+      <div class="subtle" style="margin-top:4px">${fmtDateShort(upcoming.start)}${upcoming.end?' — '+fmtDateShort(upcoming.end):''}</div>`;
+  }
+}
+
+/* ============================================================
+   УТРЕННИЕ УВЕДОМЛЕНИЯ
+   ============================================================ */
+function buildMorningDigest(){
+  const t0=todayISO();
+  const out=[];let hasAny=false;
+  // ДР сегодня и в ближайшие 7 дней
+  const bd=State.bdays.map(b=>({...b,next:nextBday(b.day,b.month)})).sort((a,b)=>a.next-b.next);
+  const bdToday=bd.filter(b=>daysBetween(t0,`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`)===0);
+  const bdWeek=bd.filter(b=>{const d=daysBetween(t0,`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`);return d>0&&d<=7});
+  if(bdToday.length){hasAny=true;out.push(`🎂 Сегодня день рождения: ${bdToday.map(b=>b.name).join(', ')}`)}
+  if(bdWeek.length){hasAny=true;out.push(`🎁 На неделе: ${bdWeek.map(b=>`${b.name} (${daysBetween(t0,`${b.next.getFullYear()}-${pad(b.next.getMonth()+1)}-${pad(b.next.getDate())}`)} дн.)`).join(', ')}`)}
+  // Встречи сегодня
+  const evs=State.events.filter(e=>e.date===t0).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+  if(evs.length){hasAny=true;out.push(`🗓 ${evs.length} ${plural(evs.length,'встреча','встречи','встреч')} сегодня: ${evs.slice(0,3).map(e=>`${e.start||''} ${e.title}`).join('; ')}${evs.length>3?'…':''}`)}
+  // Поездки/полёты в ближайшие 7 дней
+  const trips=State.trips.filter(t=>{const d=daysBetween(t0,t.start);return d>=0&&d<=7});
+  if(trips.length){
+    hasAny=true;
+    out.push(`✈️ Скоро поездки: ${trips.map(t=>{const d=daysBetween(t0,t.start);return `${t.dest} ${d===0?'сегодня':'через '+d+' '+plural(d,'день','дня','дней')}`}).join(', ')}`);
+  }
+  return{has:hasAny,lines:out,short:out.join(' · ')};
+}
+async function fireMorningNotif(){
+  const dig=buildMorningDigest();
+  State.notif.lastDate=todayISO();save('notif');
+  renderNotifBanner(dig);
+  if(!dig.has)return;
+  if(!('Notification'in window))return;
+  if(Notification.permission!=='granted')return;
+  try{
+    new Notification(`Доброе утро${State.settings.name?', '+State.settings.name:''}`,{
+      body:dig.lines.join('\n'),
+      tag:'noteai-morning-'+todayISO(),
+    });
+  }catch(e){}
+}
+function renderNotifBanner(dig){
+  const root=$('#notifBanner');
+  if(!dig){const d=buildMorningDigest();if(!d.has){root.innerHTML='';return}return renderNotifBanner(d)}
+  if(!dig.has){root.innerHTML='';return}
+  root.innerHTML=`<div class="banner"><span class="em">🌞</span><div><strong>Сводка на сегодня</strong><div class="subtle" style="margin-top:2px">${dig.lines.map(esc).join('<br>')}</div></div></div>`;
+}
+function checkMorningNotifs(){
+  if(!State.notif.enabled)return;
+  const now=new Date();
+  const[hh,mm]=(State.notif.time||'08:30').split(':').map(Number);
+  const target=hh*60+mm;
+  const cur=now.getHours()*60+now.getMinutes();
+  if(cur>=target&&State.notif.lastDate!==todayISO()){
+    fireMorningNotif();
+  }
+}
+async function requestNotifPermission(){
+  if(!('Notification'in window)){toast('браузер не умеет уведомления');return false}
+  if(Notification.permission==='granted')return true;
+  if(Notification.permission==='denied'){toast('уведомления заблокированы в браузере');return false}
+  const r=await Notification.requestPermission();
+  return r==='granted';
+}
+
+/* ============================================================
+   ПОИСК по всему приложению
+   ============================================================ */
+function searchAll(q){
+  q=q.trim().toLowerCase();if(!q)return null;
+  const hit=s=>String(s||'').toLowerCase().includes(q);
+  const limit=8;
+  const tasks=State.tasks.filter(t=>hit(t.text)).slice(0,limit).map(t=>({type:'task',id:t.id,t:t.text,s:`${QUADS[t.quad]?.title||''}${t.done?' · выполнено':''}${t.due?' · '+fmtDateShort(t.due):''}`,em:'✦',quad:t.quad}));
+  const events=State.events.filter(e=>hit(e.title)||hit(e.note)).slice(0,limit).map(e=>({type:'event',id:e.id,t:e.title,s:`${fmtDateShort(e.date)} ${e.start||''}${e.note?' · '+e.note:''}`,em:'🗓'}));
+  const bdays=State.bdays.filter(b=>hit(b.name)).slice(0,limit).map(b=>({type:'bday',id:b.id,t:b.name,s:`${b.day} ${RU.monthsGen[b.month-1]}${b.year?', '+b.year:''}`,em:'🎂'}));
+  const contacts=State.contacts.filter(c=>hit(c.name)||hit(c.role)||hit(c.phone)||hit(c.email)||hit(c.note)||(c.tags||[]).some(hit)).slice(0,limit).map(c=>({type:'contact',id:c.id,t:c.name,s:[c.role,c.phone,c.email].filter(Boolean).join(' · '),em:'📇'}));
+  const trips=State.trips.filter(t=>hit(t.dest)||hit(t.country)||hit(t.purpose)||hit(t.note)).slice(0,limit).map(t=>({type:'trip',id:t.id,t:t.dest,s:[t.country,t.purpose,fmtDateShort(t.start)].filter(Boolean).join(' · '),em:'✈️'}));
+  const places=State.places.filter(p=>hit(p.name)||hit(p.city)||hit(p.country)||hit(p.note)).slice(0,limit).map(p=>({type:'place',id:p.id,t:p.name,s:`${PLACE_TYPES[p.type]?.l||''}${p.city?' · '+p.city:''}${p.country?', '+p.country:''}`,em:PLACE_TYPES[p.type]?.e||'📍'}));
+  return{tasks,events,bdays,contacts,trips,places};
+}
+function openSearchModal(){
+  openSheet(`<h2>Поиск<button class="x" data-close>×</button></h2>
+    <div class="gs-input"><span class="ic">🔍</span><input id="gsQ" autofocus placeholder="задачи, события, контакты, поездки, места…"></div>
+    <div class="gs-results" id="gsR"></div>`,s=>{
+    const inp=s.querySelector('#gsQ');const out=s.querySelector('#gsR');
+    function go(it){
+      closeSheet();
+      if(it.type==='task')openTaskModal(it.id);
+      else if(it.type==='event'){const e=State.events.find(x=>x.id===it.id);if(e){State.scheduleDate=e.date;switchView('schedule');renderSchedule();setTimeout(()=>openEventModal(it.id),120)}}
+      else if(it.type==='bday'){switchView('bdays');setTimeout(()=>openBdayModal(it.id),120)}
+      else if(it.type==='contact'){switchView('contacts');setTimeout(()=>openContactModal(it.id),120)}
+      else if(it.type==='trip'){switchView('trips');setTimeout(()=>openTripModal(it.id),120)}
+      else if(it.type==='place'){switchView('trips');switchTravelSub('places');setTimeout(()=>openPlaceModal(it.id),120)}
+    }
+    function render(){
+      const q=inp.value;const r=searchAll(q);
+      if(!r){
+        out.innerHTML=`<div class="gs-hint">Печатай, чтобы искать по всему NoteAI<div class="kbds" style="margin-top:10px"><span class="kbd">⌘K</span> — открыть поиск</div></div>`;return;
+      }
+      const all=[...r.tasks,...r.events,...r.bdays,...r.contacts,...r.trips,...r.places];
+      if(!all.length){out.innerHTML=`<div class="gs-hint">ничего не нашлось</div>`;return}
+      const groups=[['Задачи',r.tasks],['События',r.events],['Дни рождения',r.bdays],['Контакты',r.contacts],['Поездки',r.trips],['Места',r.places]].filter(([,a])=>a.length);
+      out.innerHTML=groups.map(([t,a])=>`<div class="gs-group"><h4>${t}</h4>${a.map(it=>`<div class="gs-item" data-tp="${it.type}" data-id="${it.id}"><span class="em">${it.em}</span><div class="body"><div class="t">${esc(it.t)}</div><div class="s">${esc(it.s||'')}</div></div></div>`).join('')}</div>`).join('');
+      $$('.gs-item',out).forEach(el=>el.addEventListener('click',()=>{const tp=el.dataset.tp;const id=el.dataset.id;const item=all.find(x=>x.type===tp&&x.id===id);go(item)}));
+    }
+    inp.addEventListener('input',render);
+    render();
+  });
+}
+
+/* ============================================================
+   МОДАЛЬНЫЕ ОКНА
+   ============================================================ */
+function openSheet(html,onMount,opt={}){
+  const s=$('#sheet');s.className='sheet'+(opt.wide?' wide':'');s.innerHTML=html;$('#scrim').classList.add('show');
+  onMount&&onMount(s);
+  s.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeSheet));
+  setTimeout(()=>{const inp=s.querySelector('input[autofocus], textarea[autofocus]');inp&&inp.focus()},80);
+}
+function closeSheet(){$('#scrim').classList.remove('show');$('#sheet').innerHTML=''}
+$('#scrim').addEventListener('click',e=>{if(e.target.id==='scrim')closeSheet()});
+
+function openSettingsModal(){
+  const perm=('Notification'in window)?Notification.permission:'unsupported';
+  openSheet(`<h2>Настройки<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Как тебя зовут?</label><input id="nm" autofocus placeholder="например, Асель" value="${esc(State.settings.name||'')}" maxlength="40"></div>
+
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;margin:18px 0 4px">🔔 Уведомления</h3>
+    <div class="subtle" style="margin-bottom:6px;font-size:12.5px">сводка на день — дни рождения, встречи, ближайшие поездки. Работает пока вкладка открыта.</div>
+    <div class="toggle">
+      <div class="lbl"><div class="t">Утренняя сводка</div><div class="s">браузерное уведомление с напоминаниями</div></div>
+      <div class="switch ${State.notif.enabled?'on':''}" id="swN"></div>
+    </div>
+    <div class="field"><label>Во сколько присылать</label><input id="ntm" type="time" value="${esc(State.notif.time||'08:30')}"></div>
+    ${perm==='denied'?`<div class="banner" style="margin:0 0 12px"><span class="em">⚠️</span><div>браузер сейчас блокирует уведомления — разреши их в настройках сайта</div></div>`:''}
+
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;margin:18px 0 4px">✨ AI (Anthropic)</h3>
+    <div class="field"><label>API key (для AI-справки по поездкам)</label>
+    <input id="apk" placeholder="sk-ant-…" value="${esc(State.ai.key||'')}" autocomplete="off">
+    <div class="subtle" style="font-size:11.5px;margin-top:4px">хранится только у тебя в браузере. без ключа всё кроме AI-справки работает как обычно.</div></div>
+
+    <div class="actions"><div></div><div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">сохранить</button></div></div>`,s=>{
+    const sw=s.querySelector('#swN');let on=State.notif.enabled;
+    sw.addEventListener('click',async()=>{
+      if(!on){
+        const ok=await requestNotifPermission();if(!ok)return;
+      }
+      on=!on;sw.classList.toggle('on',on);
+    });
+    s.querySelector('#ok').addEventListener('click',()=>{
+      State.settings.name=s.querySelector('#nm').value.trim();
+      State.ai.key=s.querySelector('#apk').value.trim();
+      State.notif.enabled=on;
+      State.notif.time=s.querySelector('#ntm').value||'08:30';
+      save('settings');save('ai');save('notif');
+      closeSheet();renderAll();toast('сохранил');
+      // если включено и время уже прошло — отправим сразу
+      checkMorningNotifs();
+    });
+  });
+}
+function openApiKeyModal(then){
+  openSheet(`<h2>Ключ Anthropic API<button class="x" data-close>×</button></h2>
+    <div class="field"><label>API key</label><input id="apk" autofocus placeholder="sk-ant-…" value="${esc(State.ai.key||'')}" autocomplete="off">
+    <div class="subtle" style="font-size:12px;margin-top:6px">нужен чтобы AI собрал справку по поездке. получить можно на console.anthropic.com. ключ остаётся в твоём браузере.</div></div>
+    <div class="actions"><div></div><div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">сохранить</button></div></div>`,s=>{
+    s.querySelector('#ok').addEventListener('click',()=>{
+      State.ai.key=s.querySelector('#apk').value.trim();save('ai');closeSheet();then&&then();
+    });
+  });
+}
+function openTaskModal(id){
+  const t=id?State.tasks.find(x=>x.id===id):{text:'',quad:'ui',done:false,due:'',rep:'none'};
+  if(!t)return;
+  const qOpts=Object.entries(QUADS).map(([k,v])=>`<option value="${k}" ${t.quad===k?'selected':''}>${v.title}</option>`).join('');
+  openSheet(`<h2>${id?'Изменить задачу':'Новая задача'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Что сделать</label><textarea id="tx" autofocus maxlength="240">${esc(t.text)}</textarea></div>
+    <div class="row"><div class="field"><label>Квадрат</label><select id="qd">${qOpts}</select></div>
+      <div class="field"><label>Срок</label><input id="du" type="date" value="${esc(t.due||'')}"></div></div>
+    <div class="field"><label>Повтор</label>
+      <div class="seg" id="rep">
+        ${[['none','нет'],['day','день'],['week','неделя'],['month','месяц']].map(([k,l])=>`<button data-v="${k}" class="${t.rep===k?'sel':''}">${l}</button>`).join('')}
+      </div>
+    </div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    let rep=t.rep||'none';
+    s.querySelectorAll('#rep button').forEach(b=>b.addEventListener('click',()=>{rep=b.dataset.v;s.querySelectorAll('#rep button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const text=s.querySelector('#tx').value.trim();if(!text){toast('текст не пустой');return}
+      const quad=s.querySelector('#qd').value;const due=s.querySelector('#du').value;
+      if(id){Object.assign(t,{text,quad,due,rep})}
+      else State.tasks.push({id:uid(),text,quad,due,rep,done:false});
+      save('tasks');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить задачу?')){State.tasks=State.tasks.filter(x=>x.id!==id);save('tasks');closeSheet();renderAll()}
+    });
+  });
+}
+function openEventModal(id){
+  const e=id?State.events.find(x=>x.id===id):{title:'',start:'',end:'',note:'',color:EVT_COLORS[0],date:State.scheduleDate};
+  if(!e)return;
+  openSheet(`<h2>${id?'Изменить событие':'Новое событие'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Название</label><input id="t" autofocus value="${esc(e.title)}" maxlength="120"></div>
+    <div class="row"><div class="field"><label>Дата</label><input id="d" type="date" value="${esc(e.date||State.scheduleDate)}"></div>
+      <div class="field"><label>Начало</label><input id="s" type="time" value="${esc(e.start||'')}"></div>
+      <div class="field"><label>Конец</label><input id="en" type="time" value="${esc(e.end||'')}"></div></div>
+    <div class="field"><label>Заметка / место</label><textarea id="n" maxlength="240">${esc(e.note||'')}</textarea></div>
+    <div class="field"><label>Цвет</label><div class="swatches" id="sw">${EVT_COLORS.map(c=>`<span class="swatch ${c===e.color?'sel':''}" data-c="${c}" style="background:${c}"></span>`).join('')}</div></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    let color=e.color||EVT_COLORS[0];
+    s.querySelectorAll('#sw .swatch').forEach(b=>b.addEventListener('click',()=>{color=b.dataset.c;s.querySelectorAll('#sw .swatch').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const o={title:s.querySelector('#t').value.trim(),date:s.querySelector('#d').value,start:s.querySelector('#s').value,end:s.querySelector('#en').value,note:s.querySelector('#n').value.trim(),color};
+      if(!o.title){toast('добавь название');return}
+      if(id)Object.assign(e,o); else State.events.push({id:uid(),...o});
+      save('events');closeSheet();State.scheduleDate=o.date;renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить событие?')){State.events=State.events.filter(x=>x.id!==id);save('events');closeSheet();renderAll()}
+    });
+  });
+}
+function openBdayModal(id){
+  const b=id?State.bdays.find(x=>x.id===id):{name:'',day:'',month:'',year:''};
+  if(!b)return;
+  const mOpts=RU.months.map((m,i)=>`<option value="${i+1}" ${+b.month===i+1?'selected':''}>${m}</option>`).join('');
+  openSheet(`<h2>${id?'Изменить дату':'Новый день рождения'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Имя</label><input id="nm" autofocus value="${esc(b.name)}" maxlength="60"></div>
+    <div class="row"><div class="field"><label>День</label><input id="d" type="number" min="1" max="31" value="${esc(b.day||'')}"></div>
+      <div class="field"><label>Месяц</label><select id="m"><option value="">—</option>${mOpts}</select></div>
+      <div class="field"><label>Год (необяз.)</label><input id="y" type="number" min="1900" max="2100" value="${esc(b.year||'')}"></div></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const name=s.querySelector('#nm').value.trim();
+      const day=+s.querySelector('#d').value;
+      const month=+s.querySelector('#m').value;
+      const year=s.querySelector('#y').value?+s.querySelector('#y').value:undefined;
+      if(!name||!day||!month){toast('имя, день и месяц обязательны');return}
+      if(day<1||day>31||month<1||month>12){toast('проверь день/месяц');return}
+      const o={name,day,month,year};
+      if(id)Object.assign(b,o);else State.bdays.push({id:uid(),...o});
+      save('bdays');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить?')){State.bdays=State.bdays.filter(x=>x.id!==id);save('bdays');closeSheet();renderAll()}
+    });
+  });
+}
+function openClockModal(){
+  const opts=TZ_LIST.map(([tz,lbl])=>`<option value="${tz}">${lbl} — ${tz}</option>`).join('');
+  openSheet(`<h2>Новый часовой пояс<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Город (часовой пояс)</label><select id="tz" autofocus>${opts}</select></div>
+    <div class="field"><label>Подпись (можно своё имя поезда/руководителя)</label><input id="lb" placeholder="например, шеф в Дубае"></div>
+    <div class="actions"><div></div><div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">добавить</button></div></div>`,s=>{
+    const sel=s.querySelector('#tz');const lb=s.querySelector('#lb');
+    sel.addEventListener('change',()=>{if(!lb.value){const found=TZ_LIST.find(x=>x[0]===sel.value);if(found)lb.placeholder=found[1]}});
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const tz=sel.value;const found=TZ_LIST.find(x=>x[0]===tz);
+      const label=lb.value.trim()||(found?found[1]:tz);
+      State.clocks.push({id:uid(),label,tz});save('clocks');closeSheet();renderAll();
+    });
+  });
+}
+function openContactModal(id){
+  const c=id?State.contacts.find(x=>x.id===id):{name:'',role:'',phone:'',email:'',tags:[],note:''};
+  if(!c)return;
+  openSheet(`<h2>${id?'Контакт':'Новый контакт'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Имя</label><input id="n" autofocus value="${esc(c.name)}" maxlength="80"></div>
+    <div class="field"><label>Роль / компания</label><input id="r" value="${esc(c.role||'')}" maxlength="80"></div>
+    <div class="row"><div class="field"><label>Телефон</label><input id="p" value="${esc(c.phone||'')}" maxlength="40"></div>
+      <div class="field"><label>Email</label><input id="e" value="${esc(c.email||'')}" maxlength="80"></div></div>
+    <div class="field"><label>Теги (через запятую)</label><input id="t" value="${esc((c.tags||[]).join(', '))}"></div>
+    <div class="field"><label>Заметка</label><textarea id="nt" maxlength="400">${esc(c.note||'')}</textarea></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const o={name:s.querySelector('#n').value.trim(),role:s.querySelector('#r').value.trim(),phone:s.querySelector('#p').value.trim(),email:s.querySelector('#e').value.trim(),tags:s.querySelector('#t').value.split(',').map(x=>x.trim()).filter(Boolean),note:s.querySelector('#nt').value.trim()};
+      if(!o.name){toast('добавь имя');return}
+      if(id)Object.assign(c,o);else State.contacts.push({id:uid(),...o});
+      save('contacts');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить контакт?')){State.contacts=State.contacts.filter(x=>x.id!==id);save('contacts');closeSheet();renderAll()}
+    });
+  });
+}
+function openTripModal(id){
+  const t=id?State.trips.find(x=>x.id===id):{dest:'',country:'',start:'',end:'',tz:'',purpose:'',note:'',checklist:[]};
+  if(!t)return;
+  const opts=`<option value="">— не указан —</option>`+TZ_LIST.map(([tz,lbl])=>`<option value="${tz}" ${t.tz===tz?'selected':''}>${lbl}</option>`).join('');
+  openSheet(`<h2>${id?'Поездка':'Новая поездка'}<button class="x" data-close>×</button></h2>
+    <div class="row"><div class="field"><label>Город</label><input id="d" autofocus value="${esc(t.dest)}" maxlength="60"></div>
+      <div class="field"><label>Страна</label><input id="c" value="${esc(t.country||'')}" maxlength="60"></div></div>
+    <div class="row"><div class="field"><label>С</label><input id="s" type="date" value="${esc(t.start||'')}"></div>
+      <div class="field"><label>По</label><input id="e" type="date" value="${esc(t.end||'')}"></div></div>
+    <div class="field"><label>Часовой пояс направления</label><select id="tz">${opts}</select></div>
+    <div class="field"><label>Цель поездки</label><input id="p" value="${esc(t.purpose||'')}" maxlength="80"></div>
+    <div class="field"><label>Заметка</label><textarea id="n" maxlength="240">${esc(t.note||'')}</textarea></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const o={dest:s.querySelector('#d').value.trim(),country:s.querySelector('#c').value.trim(),start:s.querySelector('#s').value,end:s.querySelector('#e').value,tz:s.querySelector('#tz').value,purpose:s.querySelector('#p').value.trim(),note:s.querySelector('#n').value.trim()};
+      if(!o.dest||!o.start){toast('город и дата начала обязательны');return}
+      if(id)Object.assign(t,o);else State.trips.push({id:uid(),...o,checklist:[{text:'виза/документы',done:false},{text:'билеты',done:false},{text:'отель',done:false},{text:'чемодан',done:false}],briefing:''});
+      save('trips');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить поездку?')){State.trips=State.trips.filter(x=>x.id!==id);save('trips');closeSheet();renderAll()}
+    });
+  });
+}
+function openPlaceModal(id,prefilTripId){
+  let p=id?State.places.find(x=>x.id===id):null;
+  if(id&&!p)return;
+  if(!p){
+    p={name:'',type:'restaurant',city:'',country:'',address:'',rating:0,note:'',tripId:prefilTripId||'',visitedDate:todayISO()};
+    if(prefilTripId){
+      const tr=State.trips.find(t=>t.id===prefilTripId);
+      if(tr){p.city=tr.dest||'';p.country=tr.country||'';p.visitedDate=tr.start||todayISO()}
+    }
+  }
+  const tripOpts=`<option value="">— не привязано —</option>`+State.trips.sort((a,b)=>(b.start||'').localeCompare(a.start||'')).map(t=>`<option value="${t.id}" ${p.tripId===t.id?'selected':''}>${esc(t.dest)} (${fmtDateShort(t.start)})</option>`).join('');
+  openSheet(`<h2>${id?'Место':'Новое место'}<button class="x" data-close>×</button></h2>
+    <div class="field"><label>Название</label><input id="nm" autofocus value="${esc(p.name)}" placeholder="например, Mikla" maxlength="80"></div>
+    <div class="field"><label>Тип</label>
+      <div class="seg" id="tp">${Object.entries(PLACE_TYPES).map(([k,v])=>`<button data-v="${k}" class="${p.type===k?'sel':''}">${v.e} ${v.l}</button>`).join('')}</div>
+    </div>
+    <div class="row"><div class="field"><label>Город</label><input id="ct" value="${esc(p.city||'')}" maxlength="60"></div>
+      <div class="field"><label>Страна</label><input id="co" value="${esc(p.country||'')}" maxlength="60"></div></div>
+    <div class="field"><label>Адрес / ориентир (необяз.)</label><input id="ad" value="${esc(p.address||'')}" maxlength="120"></div>
+    <div class="row"><div class="field"><label>Когда был(а)</label><input id="vd" type="date" value="${esc(p.visitedDate||'')}"></div>
+      <div class="field"><label>Поездка (если из поездки)</label><select id="tr">${tripOpts}</select></div></div>
+    <div class="field"><label>Оценка</label><div class="rating" id="rt">${[1,2,3,4,5].map(i=>`<span data-v="${i}" class="${p.rating>=i?'on':''}">★</span>`).join('')}</div></div>
+    <div class="field"><label>Заметка (что понравилось, что заказывали, на что обратить внимание)</label><textarea id="nt" maxlength="500">${esc(p.note||'')}</textarea></div>
+    <div class="actions"><div class="left">${id?`<button class="btn ghost danger" id="del">удалить</button>`:''}</div>
+      <div class="right"><button class="btn ghost" data-close>отмена</button><button class="btn primary" id="ok">${id?'сохранить':'добавить'}</button></div></div>`,s=>{
+    let type=p.type;
+    s.querySelectorAll('#tp button').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.v;s.querySelectorAll('#tp button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
+    let rating=p.rating||0;
+    function rr(){s.querySelectorAll('#rt span').forEach(sp=>sp.classList.toggle('on',+sp.dataset.v<=rating))}
+    s.querySelectorAll('#rt span').forEach(sp=>sp.addEventListener('click',()=>{rating=rating===+sp.dataset.v?0:+sp.dataset.v;rr()}));
+    // авто-заполнение города из поездки
+    const trSel=s.querySelector('#tr');
+    trSel.addEventListener('change',()=>{
+      const tr=State.trips.find(x=>x.id===trSel.value);
+      if(tr){
+        if(!s.querySelector('#ct').value)s.querySelector('#ct').value=tr.dest||'';
+        if(!s.querySelector('#co').value)s.querySelector('#co').value=tr.country||'';
+        if(!s.querySelector('#vd').value)s.querySelector('#vd').value=tr.start||'';
+      }
+    });
+    s.querySelector('#ok').addEventListener('click',()=>{
+      const o={name:s.querySelector('#nm').value.trim(),type,city:s.querySelector('#ct').value.trim(),country:s.querySelector('#co').value.trim(),address:s.querySelector('#ad').value.trim(),visitedDate:s.querySelector('#vd').value,tripId:s.querySelector('#tr').value,rating,note:s.querySelector('#nt').value.trim()};
+      if(!o.name){toast('название обязательно');return}
+      if(!o.city){toast('укажи город');return}
+      if(id)Object.assign(p,o);else State.places.push({id:uid(),...o});
+      save('places');closeSheet();renderAll();
+    });
+    if(id)s.querySelector('#del').addEventListener('click',()=>{
+      if(confirm('Удалить место?')){State.places=State.places.filter(x=>x.id!==id);save('places');closeSheet();renderAll()}
+    });
+  });
+}
+
+/* ============================================================
+   ROUTING / RENDER
+   ============================================================ */
+const ADD_FOR={tasks:()=>openTaskModal(),schedule:()=>openEventModal(),bdays:()=>openBdayModal(),clocks:()=>openClockModal(),contacts:()=>openContactModal(),trips:()=>{State.travelSub==='places'?openPlaceModal():openTripModal()}};
+function switchView(v){
+  State.view=v;
+  $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
+  $$('.view').forEach(s=>s.classList.toggle('active',s.id==='v-'+v));
+  $('#addBtn').classList.toggle('hide',!ADD_FOR[v]);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function switchTravelSub(sub){
+  State.travelSub=sub;
+  $$('#travelSub .sub-tab').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));
+  $('#trav-trips').classList.toggle('hide',sub!=='trips');
+  $('#trav-places').classList.toggle('hide',sub!=='places');
+}
+function updateCounts(){
+  $('#cntTasks').textContent=State.tasks.filter(t=>!t.done).length||'';
+  $('#cntBdays').textContent=State.bdays.length||'';
+  $('#cntContacts').textContent=State.contacts.length||'';
+  const tn=State.trips.length||'';
+  $('#cntTrips').textContent=tn;
+  $('#cntTrips2').textContent=tn;
+  $('#cntPlaces').textContent=State.places.length||'';
+  $('#setDot').classList.toggle('hide',State.notif.enabled||State.settings.name);
+}
+function renderAll(){
+  renderGreet();updateCounts();
+  renderToday();renderMatrix();renderSchedule();renderBdays();renderClocks();renderContacts();renderPlaces();renderTrips();
+  renderNotifBanner();
+}
+
+/* INIT */
+$$('#tabs .tab').forEach(t=>t.addEventListener('click',()=>switchView(t.dataset.v)));
+$$('#travelSub .sub-tab').forEach(b=>b.addEventListener('click',()=>switchTravelSub(b.dataset.sub)));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.go)));
+$('#setBtn').addEventListener('click',openSettingsModal);
+$('#searchBtn').addEventListener('click',openSearchModal);
+$('#addBtn').addEventListener('click',()=>{const fn=ADD_FOR[State.view];fn&&fn()});
+$('#dayPrev').addEventListener('click',()=>shiftDay(-1));
+$('#dayNext').addEventListener('click',()=>shiftDay(1));
+$('#dayToday').addEventListener('click',()=>{State.scheduleDate=todayISO();renderSchedule()});
+$('#contactSearch').addEventListener('input',e=>{State.contactQuery=e.target.value;renderContacts()});
+$('#placeSearch').addEventListener('input',e=>{State.placeQuery=e.target.value;renderPlaces()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeSheet();
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearchModal()}
+});
+
+function firstRun(){
+  if(!State.settings.name&&!State.tasks.length&&!State.events.length&&!State.bdays.length&&!State.contacts.length&&!State.trips.length&&!State.places.length){
+    setTimeout(openSettingsModal,400);
+  }
+}
+
+renderAll();
+setInterval(tickClocks,1000);
+setInterval(()=>{const cur=todayISO();if(window.__lastDay&&window.__lastDay!==cur){renderAll()}window.__lastDay=cur;checkMorningNotifs()},60000);
+window.__lastDay=todayISO();
+// первая проверка через 5 сек
+setTimeout(checkMorningNotifs,5000);
+firstRun();
+</script>
+</body>
+</html>
