@@ -1,5 +1,5 @@
 /* NoteAI service worker — офлайн + быстрый запуск */
-const VERSION = 'v4-2026-05-25';
+const VERSION = 'v5-2026-05-25';
 const CACHE = 'noteai-' + VERSION;
 const SHELL = [
   './',

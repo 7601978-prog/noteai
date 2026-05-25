@@ -709,6 +709,60 @@ const GR_POSITIONS={
 };
 const GR_CAT_ORDER=Object.keys(GR_POSITIONS);
 
+/* Имена — по состоянию на начало 2026. Состав правительства РК меняется,
+   обязательно сверяй с gov.kz / akorda.kz перед использованием. */
+const GR_NAMES={
+  'Президент Республики Казахстан':{name:'Касым-Жомарт Токаев',org:'Акорда'},
+  'Государственный секретарь':{name:'Ерлан Карин',org:'Администрация Президента'},
+  'Премьер-министр':{name:'Олжас Бектенов',org:'Канцелярия Премьер-Министра'},
+  'Председатель Сената Парламента':{name:'Маулен Ашимбаев',org:'Сенат Парламента РК'},
+  'Председатель Мажилиса Парламента':{name:'Ерлан Кошанов',org:'Мажилис Парламента РК'},
+  'Руководитель Администрации Президента':{name:'Айбек Дадебаев',org:'Администрация Президента'},
+
+  'Министр иностранных дел':{name:'Мурат Нуртлеу',org:'МИД РК'},
+  'Министр внутренних дел':{name:'Ержан Саденов',org:'МВД РК'},
+  'Министр обороны':{name:'Руслан Жаксылыков',org:'Министерство обороны РК'},
+  'Министр финансов':{name:'Мади Такиев',org:'Минфин РК'},
+  'Министр национальной экономики':{name:'Нурлан Байбазаров',org:'МНЭ РК'},
+  'Министр юстиции':{name:'Ерлан Сарсембаев',org:'Минюст РК'},
+  'Министр здравоохранения':{name:'Акмарал Альназарова',org:'Минздрав РК'},
+  'Министр просвещения':{name:'Гани Бейсембаев',org:'Министерство просвещения РК'},
+  'Министр науки и высшего образования':{name:'Саясат Нурбек',org:'МНВО РК'},
+  'Министр культуры и информации':{name:'Аида Балаева',org:'МКИ РК'},
+  'Министр энергетики':{name:'Алмасадам Саткалиев',org:'Минэнерго РК'},
+  'Министр промышленности и строительства':{name:'Канат Шарлапаев',org:'МПС РК'},
+  'Министр транспорта':{name:'Марат Карабаев',org:'Минтранс РК'},
+  'Министр сельского хозяйства':{name:'Айдарбек Сапаров',org:'Минсельхоз РК'},
+  'Министр труда и социальной защиты населения':{name:'Светлана Жакупова',org:'МТСЗН РК'},
+  'Министр цифрового развития, инноваций и аэрокосмической промышленности':{name:'Жаслан Мадиев',org:'МЦРИАП РК'},
+  'Министр экологии и природных ресурсов':{name:'Ерлан Нысанбаев',org:'МЭПР РК'},
+  'Министр водных ресурсов и ирригации':{name:'Нуржан Нуржигитов',org:'МВРИ РК'},
+  'Министр туризма и спорта':{name:'Ермек Маржикпаев',org:'МТС РК'},
+
+  'Аким г. Астана':{name:'Женис Касымбек',org:'Акимат г. Астаны'},
+  'Аким г. Алматы':{name:'Ерболат Досаев',org:'Акимат г. Алматы'},
+  'Аким г. Шымкент':{name:'Габит Сыздыкбеков',org:'Акимат г. Шымкент'},
+
+  'Аким Абайской области':{name:'Берик Уали',org:'Акимат Абайской области'},
+  'Аким Акмолинской области':{name:'Марат Ахметжанов',org:'Акимат Акмолинской области'},
+  'Аким Актюбинской области':{name:'Асхат Шахаров',org:'Акимат Актюбинской области'},
+  'Аким Алматинской области':{name:'Марат Султангазиев',org:'Акимат Алматинской области'},
+  'Аким Атырауской области':{name:'Серик Шапкенов',org:'Акимат Атырауской области'},
+  'Аким Восточно-Казахстанской области':{name:'Ермек Кошербаев',org:'Акимат ВКО'},
+  'Аким Жамбылской области':{name:'Ерболат Карашукеев',org:'Акимат Жамбылской области'},
+  'Аким Жетысуской области':{name:'Бейбит Исабаев',org:'Акимат Жетысуской области'},
+  'Аким Западно-Казахстанской области':{name:'Нариман Турегулиев',org:'Акимат ЗКО'},
+  'Аким Карагандинской области':{name:'Ермаганбет Булекпаев',org:'Акимат Карагандинской области'},
+  'Аким Костанайской области':{name:'Кумар Аксакалов',org:'Акимат Костанайской области'},
+  'Аким Кызылординской области':{name:'Нурлыбек Налибаев',org:'Акимат Кызылординской области'},
+  'Аким Мангистауской области':{name:'Нурдаулет Килыбай',org:'Акимат Мангистауской области'},
+  'Аким Павлодарской области':{name:'Асаин Байханов',org:'Акимат Павлодарской области'},
+  'Аким Северо-Казахстанской области':{name:'Айдос Султанов',org:'Акимат СКО'},
+  'Аким Туркестанской области':{name:'Дархан Сатыбалды',org:'Акимат Туркестанской области'},
+  'Аким Улытауской области':{name:'Бердыбек Сапарбаев',org:'Акимат Улытауской области'},
+};
+const GR_NOTE='Данные на начало 2026. Проверь на gov.kz / akorda.kz — состав меняется.';
+
 /* STATE */
 const State={
   settings:Store.get('settings',{name:''}),
@@ -1353,12 +1407,26 @@ function etaChipClass(iso){
 /* ============================================================
    GR — министры, акимы, гос. контакты
    ============================================================ */
-function seedGR(){
+function seedGR(withNames){
   const arr=[];
   GR_CAT_ORDER.forEach(cat=>{
-    GR_POSITIONS[cat].forEach(pos=>arr.push({id:uid(),cat,position:pos,name:'',org:'',phone:'',email:'',address:'',note:'',tags:[]}));
+    GR_POSITIONS[cat].forEach(pos=>{
+      const n=withNames?(GR_NAMES[pos]||{}):{};
+      arr.push({id:uid(),cat,position:pos,name:n.name||'',org:n.org||'',phone:'',email:'',address:'',note:withNames&&n.name?GR_NOTE:'',tags:withNames&&n.name?['проверь']:[]});
+    });
   });
-  State.gr=arr;save('gr');renderAll();toast('структура добавлена — заполни актуальные имена');
+  State.gr=arr;save('gr');renderAll();
+  toast(withNames?'имена добавлены — сверь с gov.kz':'структура добавлена — заполни имена');
+}
+function fillGRNames(){
+  let filled=0;
+  State.gr.forEach(g=>{
+    if(g.name)return;
+    const n=GR_NAMES[g.position];
+    if(n&&n.name){g.name=n.name;if(!g.org)g.org=n.org||'';if(!g.note)g.note=GR_NOTE;if(!(g.tags||[]).includes('проверь'))g.tags=[...(g.tags||[]),'проверь'];filled++}
+  });
+  save('gr');renderAll();
+  toast(filled?`заполнил ${filled} ${plural(filled,'имя','имени','имён')} — сверь`:'нечего заполнять');
 }
 function renderGrFilters(){
   const root=$('#grFilters');
@@ -1374,11 +1442,23 @@ function renderGr(){
   if(!State.gr.length){
     root.innerHTML=`<div class="gr-seed">
       <h3>🏛 GR-база</h3>
-      <p>Здесь — структура высшего руководства, министры и акимы РК. Можно загрузить шаблон со всеми позициями (имена и контакты заполнишь сама).</p>
-      <button class="btn primary" onclick="seedGR()">Заполнить структуру РК</button>
-      <div style="margin-top:8px"><button class="btn ghost sm" onclick="openGrModal()">или добавить вручную</button></div>
+      <p>Высшее руководство, министры и акимы РК. Можно сразу загрузить со списком имён по состоянию на начало 2026, либо пустой шаблон позиций.</p>
+      <button class="btn primary" onclick="seedGR(true)">Загрузить с актуальными именами</button>
+      <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="seedGR(false)">пустой шаблон</button>
+        <button class="btn ghost sm" onclick="openGrModal()">добавить вручную</button>
+      </div>
+      <div class="subtle" style="margin-top:12px;font-size:12px">состав правительства меняется — после загрузки сверь с <a href="https://www.gov.kz" target="_blank" rel="noopener" style="color:var(--coral)">gov.kz</a> / <a href="https://www.akorda.kz" target="_blank" rel="noopener" style="color:var(--coral)">akorda.kz</a></div>
     </div>`;
     return;
+  }
+  const hasNames=State.gr.some(g=>g.name);
+  const missing=State.gr.filter(g=>!g.name&&GR_NAMES[g.position]).length;
+  let banner='';
+  if(missing){
+    banner=`<div class="banner" style="margin-bottom:14px"><span class="em">💡</span><div>${missing} ${plural(missing,'позиция','позиции','позиций')} без имени, у меня есть данные на начало 2026 — заполнить?</div><button class="btn sm" style="margin-left:auto" onclick="fillGRNames()">заполнить</button></div>`;
+  }else if(hasNames){
+    banner=`<div class="banner" style="margin-bottom:14px;background:linear-gradient(135deg,#F4E6C8,#EDDDB0);border-color:#D7CCB3"><span class="em">⚠️</span><div>Имена — на начало 2026. Состав меняется, сверь актуальность на <a href="https://www.gov.kz" target="_blank" rel="noopener" style="color:#A04A33;font-weight:600">gov.kz</a></div></div>`;
   }
   renderGrFilters();
   const q=State.grQuery.trim().toLowerCase();
@@ -1387,11 +1467,11 @@ function renderGr(){
     if(State.grFilter!=='all'&&g.cat!==State.grFilter)return false;
     return true;
   });
-  if(!arr.length){root.innerHTML=`<div class="empty">никого не нашлось</div>`;return}
+  if(!arr.length){root.innerHTML=banner+`<div class="empty">никого не нашлось</div>`;return}
   const groups=new Map();
   for(const g of arr){if(!groups.has(g.cat))groups.set(g.cat,[]);groups.get(g.cat).push(g)}
   const sortedKeys=[...groups.keys()].sort((a,b)=>{const ia=GR_CAT_ORDER.indexOf(a),ib=GR_CAT_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)});
-  root.innerHTML=sortedKeys.map(cat=>{
+  root.innerHTML=banner+sortedKeys.map(cat=>{
     const items=groups.get(cat);
     return `<div class="gr-cat">
       <h3>${esc(cat)}<span class="n">${items.length}</span></h3>
